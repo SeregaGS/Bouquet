@@ -1,10 +1,16 @@
-// Импорт вендоров и утилит, не удаляйте его
 import "./vendor";
 import { ImageSlider } from "./utils/image-slider";
 import { iosVhFix } from "./utils/ios-vh-fix";
 import { modals, initModals } from "./modals/init-modals";
 
-// Ваши импорты...
+import HeaderCartPresenter from "./presenter/header-cart-presenter";
+
+const body = document.querySelector("body");
+const headerContainerCount = body.querySelector(".header__container");
+
+const headerCartPresenter = new HeaderCartPresenter(headerContainerCount);
+
+headerCartPresenter.init();
 
 // Код для работы попапов, не удаляйте его
 window.addEventListener("DOMContentLoaded", () => {
