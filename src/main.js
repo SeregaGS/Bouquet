@@ -4,13 +4,17 @@ import { iosVhFix } from "./utils/ios-vh-fix";
 import { modals, initModals } from "./modals/init-modals";
 
 import HeaderCartPresenter from "./presenter/header-cart-presenter";
+import HeroPresenter from "./presenter/hero-presenter";
 
 const body = document.querySelector("body");
 const headerContainerCount = body.querySelector(".header__container");
+const mainContainer = body.querySelector("main");
 
 const headerCartPresenter = new HeaderCartPresenter(headerContainerCount);
+const heroPresenter = new HeroPresenter(mainContainer);
 
 headerCartPresenter.init();
+heroPresenter.init();
 
 // Код для работы попапов, не удаляйте его
 window.addEventListener("DOMContentLoaded", () => {
@@ -38,4 +42,6 @@ window.addEventListener("DOMContentLoaded", () => {
   // ------------
 
   // Ваш код...
+
+
 });
