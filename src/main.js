@@ -5,6 +5,7 @@ import { modals, initModals } from "./modals/init-modals";
 
 import HeaderCartPresenter from "./presenter/header-cart-presenter";
 import HeroPresenter from "./presenter/hero-presenter";
+import MainPresenter from "./presenter/main-presenter";
 
 const body = document.querySelector("body");
 const headerContainerCount = body.querySelector(".header__container");
@@ -12,9 +13,11 @@ const mainContainer = body.querySelector("main");
 
 const headerCartPresenter = new HeaderCartPresenter(headerContainerCount);
 const heroPresenter = new HeroPresenter(mainContainer);
+const mainPresenter = new MainPresenter(mainContainer);
 
 headerCartPresenter.init();
 heroPresenter.init();
+mainPresenter.init();
 
 // Код для работы попапов, не удаляйте его
 window.addEventListener("DOMContentLoaded", () => {
@@ -42,6 +45,4 @@ window.addEventListener("DOMContentLoaded", () => {
   // ------------
 
   // Ваш код...
-
-
 });
