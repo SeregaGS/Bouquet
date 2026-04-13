@@ -1,12 +1,14 @@
 import AdvantagesView from '../views/advantages-view';
 import MissionView from '../views/mission-view';
 import FilterReasonView from '../views/filter-reason-view';
+import FilterColorContainer from '../views/filter-color-container-view';
 import {render, remove} from '../framework/render';
 
 export default class MainPresenter {
   #advantagesView = null;
   #missionView = null;
   #filterReasonView = null;
+  #filterColorContainer = null;
 
   #container = null;
 
@@ -17,8 +19,13 @@ export default class MainPresenter {
     this.#renderMissionComponent();
     this.#renderAdvantagesComponent();
     this.#renderFilterReasonComponent();
+    this.#renderFilterColorContainerComponent()
   }
 
+  #renderFilterColorContainerComponent() {
+    this.#filterColorContainer = new FilterColorContainer();
+    render(this.#filterColorContainer, this.#container);
+  }
   #renderFilterReasonComponent() {
     this.#filterReasonView = new FilterReasonView();
     render(this.#filterReasonView, this.#container);
