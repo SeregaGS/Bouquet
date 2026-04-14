@@ -1,4 +1,5 @@
 import CatalogContainerView from '../views/catalog-container-view';
+import CatalogContainerWrapView from '../views/catalog-container-wrap-view';
 import CatalogueHeaderContainerView from '../views/catalog-container-header-view';
 import CatalogButtonWrapView from "../views/catalog-button-wrap-view";
 import CatalogButtonMoreView from '../views/catalog-button-more-view';
@@ -8,8 +9,11 @@ import SortByPricePresenter from './sort-by-price-presenter';
 import ProductPresenter from './product-presenter';
 import { render, replace, remove } from '../framework/render';
 
+const COUNT_FLOWERS = 6;
+
 export default class CataloguePresenter {
   #catalogContainer = new CatalogContainerView();
+  #catalogWrapContainer = new CatalogContainerWrapView();
   #catalogHeaderContainer = new CatalogueHeaderContainerView();
   #catalogButtonContainer = new CatalogButtonWrapView();
   #catalogButtonMore = new CatalogButtonMoreView();
@@ -26,23 +30,34 @@ export default class CataloguePresenter {
     this.#container = container;
     this.#products = products.get();
   }
+  get flowers () {
+    const flowers = this.#products;
+    return flowers;
+  }
   init() {
-    this.#renderCatalogContainer(this.#container)
+    this.#renderCatalog();
   }
   #renderCatalogContainer(container) {
-    const containerElement = this.#catalogContainer.element.querySelector('.container');
     render(this.#catalogContainer, container);
-    render(this.#catalogHeaderContainer, containerElement);
-    this.#renderSortByPricePresenter();
-    this.#renderCatalogList(this.#products);
-    render(this.#catalogProductListContainer, containerElement);
-    this.#renderButton(containerElement);
+    render(this.#catalogWrapContainer, this.#catalogContainer.element);
+    render(this.#catalogHeaderContainer, this.#catalogWrapContainer.element);
+    render(this.#catalogProductListContainer, this.#catalogWrapContainer.element);
+    render(this.#catalogButtonContainer, this.#catalogWrapContainer.element);
   }
-  #renderButton(container) {
-    const containerButton = this.#catalogButtonContainer.element;
-    render(this.#catalogButtonContainer, container);
-    render(this.#catalogButtonMore, containerButton);
-    render(this.#catalogButtonUpView, containerButton);
+
+  #renderCatalog() {
+    const flowers = this.flowers.slice(0, Math.min(this.#products.length, COUNT_FLOWERS));
+
+    this.#renderCatalogContainer(this.#container)
+    this.#renderSortByPricePresenter();
+    this.#renderCatalogList(flowers);
+  }
+
+  #renderButtonMore() {
+    render(this.#catalogButtonMore, this.#catalogButtonContainer.element);
+  }
+  #renderButtonUp() {
+    render(this.#catalogButtonUpView, this.#catalogButtonContainer.element);
   }
 
   #renderSortByPricePresenter() {
@@ -50,10 +65,13 @@ export default class CataloguePresenter {
     this.#sortByPricePresenter = new SortByPricePresenter(container);
     this.#sortByPricePresenter.init();
   }
-
-
   #renderCatalogList(flowers) {
-    this.#renderFlowers(flowers, this.#catalogProductListContainer)
+    this.#renderFlowers(flowers, this.#catalogProductListContainer);
+
+    if (this.flowers.length > COUNT_FLOWERS) {
+      this.#renderButtonMore();
+      this.#renderButtonUp();
+    }
   }
   #renderFlowers(flowers, container) {
     flowers.forEach((flower) => {
