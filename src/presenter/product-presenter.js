@@ -3,8 +3,9 @@ import { render, replace, remove } from '../framework/render';
 
 export default class ProductPresenter {
   #container = null;
-  #product = null
-  #productComponent = null
+  #product = null;
+
+  #productComponent = null;
 
   constructor(container) {
     this.#container = container;
