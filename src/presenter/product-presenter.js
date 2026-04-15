@@ -10,9 +10,9 @@ export default class ProductPresenter {
   constructor(container) {
     this.#container = container;
   }
+
   init(flower) {
     this.#product = flower;
-
     const prevFlowerCardComponent = this.#productComponent;
 
     this.#productComponent = new ProductItemView(this.#product);
@@ -22,8 +22,11 @@ export default class ProductPresenter {
     }
 
     replace(this.#productComponent, prevFlowerCardComponent);
-
     remove(prevFlowerCardComponent);
+  }
+
+  destroy() {
+    remove(this.#productComponent);
   }
 
 }
