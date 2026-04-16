@@ -22,7 +22,7 @@ export default class CataloguePresenter {
   #catalogProductListContainer = new CatalogProductListView();
 
   #sortByPrice = null;
-  #currentSortByPrice = SortType.INCREMENT;
+  #currentSortByPrice;
   #productPresenter = new Map();
 
   #container = null;
@@ -35,11 +35,19 @@ export default class CataloguePresenter {
     this.#products = products.get();
   }
   init() {
-    this.#sortProducts();
     this.#renderCatalog();
   }
   get flowers () {
-    return this.#products
+    const flowers = this.#products;
+
+    switch (this.#currentSortByPrice) {
+      case SortType.INCREMENT:
+        return flowers.sort((a, b) => a.price - b.price);
+      case SortType.DECREMENT:
+        return flowers.sort((a, b) => b.price - a.price);
+      default:
+        return flowers;
+    }
   }
   #renderCatalogContainer(container) {
     render(this.#catalogContainer, container);
@@ -90,7 +98,6 @@ export default class CataloguePresenter {
       return;
     }
     this.#currentSortByPrice = sortType;
-    this.#sortProducts();
     const flowers = this.flowers.slice(0, Math.min(this.flowers.length, COUNT_FLOWERS));
     this.#clearFlowersList();
     this.#renderSort(this.#catalogHeaderContainer.element);
@@ -106,15 +113,6 @@ export default class CataloguePresenter {
       this.#sortByPrice = updateSortByPrice;
     }
     this.#sortByPrice.buttonClickHandler(this.#sortTypeChange);
-  }
-  #sortProducts = () => {
-    this.flowers.sort((a, b) => {
-      if (this.#currentSortByPrice === SortType.INCREMENT) {
-        return a.price - b.price;
-      } else {
-        return b.price - a.price;
-      }
-    });
   }
   // Clear Products presenter and buttons
   #clearFlowersList = () => {
