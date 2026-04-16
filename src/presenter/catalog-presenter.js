@@ -30,7 +30,7 @@ export default class CataloguePresenter {
 
   constructor(container, products) {
     this.#container = container;
-    this.#products = products.get();
+    this.#products = products;
   }
 
   init() {
@@ -38,7 +38,7 @@ export default class CataloguePresenter {
   }
 
   get flowers () {
-    const flowers = [...this.#products];
+    const flowers = [...this.#products.get()];
 
     switch (this.#currentSortByPrice) {
       case SortType.INCREMENT:
@@ -59,7 +59,7 @@ export default class CataloguePresenter {
   }
   // Render Catalog
   #renderCatalog() {
-    const flowers = this.flowers.slice(0, Math.min(this.#products.length, COUNT_FLOWERS));
+    const flowers = this.flowers.slice(0, Math.min(this.#products.get().length, COUNT_FLOWERS));
 
     this.#renderCatalogContainer(this.#container)
     this.#renderSort(this.#catalogHeaderContainer.element);
