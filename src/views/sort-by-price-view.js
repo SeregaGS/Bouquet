@@ -57,11 +57,5 @@ export default class SortByPriceView extends AbstractView {
     if(link) {
       this._callback.buttonClick(link.dataset.sortByPrice);
     }
-    // if(evt.target.tagName === null || evt.target.closest('.sorting-price__link')) {
-    //   const link = evt.target.closest('.sorting-price__link');
-    //   this._callback.buttonClick(link.dataset.sortByPrice);
-    // }
-    // const link = evt.target.closest('.sorting-price__link');
-    // this._callback.buttonClick(link.dataset.sortByPrice);
   }
 }
