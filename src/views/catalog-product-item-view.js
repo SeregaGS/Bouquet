@@ -1,11 +1,12 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-
-const createProductItemTemplate = ({title, description, price, previewImage, type}) =>
-  `
+import { TypeLabelProducts } from '../const';
+const createProductItemTemplate = ({title, description, price, previewImage, type}) => {
+  const label = TypeLabelProducts[type] || TypeLabelProducts.default;
+  return `
   <li class="catalogue__item">
     <div class="item-card">
       <button class="item-card__btn" type="button" data-open-modal="product-card" aria-label="посмотреть товар"></button>
-      <p class="item-card__label">${type}</p>
+      <p class="item-card__label">${label}</p>
       <div class="item-card__img-wrap">
         <button class="button-heart item-card__to-fav-btn" type="button" aria-label="добавить в избранное">
           <svg class="button-heart__icon" width="75" height="75" aria-hidden="true" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,16 +29,16 @@ const createProductItemTemplate = ({title, description, price, previewImage, typ
       <p class="text text--size-20 item-card__desc">${description}</p>
     </div>
   </li>
-  `;
+  `}
 export default class ProductItemView extends AbstractStatefulView {
   constructor(flower) {
     super();
-    this._state = ProductItemView.parseFilmToState(flower)
+    this._state = ProductItemView.parseFlowerToState(flower)
   }
   get template() {
     return createProductItemTemplate(this._state);
   }
-  static parseFilmToState = (flower) => ({
+  static parseFlowerToState = (flower) => ({
     ...flower,
   });
 }
