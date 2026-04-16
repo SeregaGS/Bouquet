@@ -11,3 +11,4 @@ export const TypeLabelProducts = {
   bridge: 'Невесте',
   default: 'Для всех'
 }
+export const TEXT_DESCRIPTION_LENGTH = 140;

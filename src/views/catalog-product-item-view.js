@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { TypeLabelProducts } from '../const';
+import { TypeLabelProducts, TEXT_DESCRIPTION_LENGTH } from '../const';
 const createProductItemTemplate = ({title, description, price, previewImage, type}) => {
   const label = TypeLabelProducts[type] || TypeLabelProducts.default;
   return `
@@ -26,7 +26,11 @@ const createProductItemTemplate = ({title, description, price, previewImage, typ
           <span class="item-card__currency">р</span>
         </div>
       </div>
-      <p class="text text--size-20 item-card__desc">${description}</p>
+      <p class="text text--size-20 item-card__desc">
+        ${description.length > TEXT_DESCRIPTION_LENGTH
+          ? `${description.slice(0, TEXT_DESCRIPTION_LENGTH)}...`
+          : description}
+      </p>
     </div>
   </li>
   `}
@@ -38,6 +42,16 @@ export default class ProductItemView extends AbstractStatefulView {
   get template() {
     return createProductItemTemplate(this._state);
   }
+
+  setOpenPopupHandler(callback) {
+    this._callback.openPopup = callback;
+    this.element.querySelector('.item-card__btn').addEventListener('click', this.#clickOpenPopup);
+  }
+  #clickOpenPopup = (evt) => {
+    evt.preventDefault();
+    this._callback.openPopup();
+  }
+
   static parseFlowerToState = (flower) => ({
     ...flower,
   });
