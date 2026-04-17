@@ -6,9 +6,11 @@ export default class ProductPresenter {
   #product = null;
 
   #productComponent = null;
+  #handleDataChange;
 
-  constructor(container) {
+  constructor(container, handleDataChange) {
     this.#container = container;
+    this.#handleDataChange = handleDataChange;
   }
 
   init(flower) {
@@ -16,6 +18,7 @@ export default class ProductPresenter {
     const prevFlowerCardComponent = this.#productComponent;
 
     this.#productComponent = new ProductItemView(this.#product);
+    this.#productComponent.setOpenPopupHandler(this.#idProduct)
 
     if(prevFlowerCardComponent === null) {
       return render(this.#productComponent, this.#container.element);
@@ -28,5 +31,7 @@ export default class ProductPresenter {
   destroy() {
     remove(this.#productComponent);
   }
-
+  #idProduct = () => {
+    this.#handleDataChange(this.#product.id);
+  }
 }
