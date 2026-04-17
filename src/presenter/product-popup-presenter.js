@@ -1,7 +1,7 @@
 import ProductItemPopupView from '../views/catalog-product-item-popup-view';
 import { render, replace, remove } from '../framework/render';
 
-export default class ProductPresenter {
+export default class ProductPopupPresenter {
   #container = null;
   #product = null;
 
@@ -17,10 +17,9 @@ export default class ProductPresenter {
     const prevFlowerCardComponent = this.#popupComponent;
 
     this.#popupComponent = new ProductItemPopupView(this.#product);
-    this.#popupComponent.setOpenPopupHandler();
 
     if(prevFlowerCardComponent === null) {
-      return render(this.#popupComponent, this.#container.element);
+      return render(this.#popupComponent, this.#container);
     }
 
     replace(this.#popupComponent, prevFlowerCardComponent);
