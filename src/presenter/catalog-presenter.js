@@ -7,6 +7,7 @@ import CatalogButtonUpView from '../views/catalog-button-up-view';
 import CatalogProductListView from '../views/catalog-product-list-view';
 import SortByPriceView from '../views/sort-by-price-view';
 import ProductPresenter from './product-presenter';
+import ProductPopupPresenter from './product-popup-presenter';
 import { render, replace, remove } from '../framework/render';
 import { SortType, COUNT_FLOWERS } from "../const";
 
@@ -22,9 +23,11 @@ export default class CataloguePresenter {
   #sortByPrice = null;
   #currentSortByPrice;
   #productPresenter = new Map();
+  #productPopupPresenter = null;
 
   #container = null;
   #products = null;
+  #selectedProduct = null;
 
   #renderFlowersCount = COUNT_FLOWERS;
 
@@ -79,9 +82,23 @@ export default class CataloguePresenter {
     })
   }
   #renderFlower = (flower, container) => {
-    const productPresenter = new ProductPresenter(container);
+    const productPresenter = new ProductPresenter(container, this.#handleProductClick);
     productPresenter.init(flower);
     this.#productPresenter.set(flower.id, productPresenter);
+  }
+  #renderPopup = (id) => {
+    const popupContainer = document.querySelector('.modal--product');
+    const contentContainer = popupContainer.querySelector('.modal-product');
+
+    if (this.#productPopupPresenter) {
+      this.#productPopupPresenter.destroy();
+    }
+
+    this.#productPopupPresenter = new ProductPopupPresenter(contentContainer)
+    this.#productPopupPresenter.init(id);
+
+    popupContainer.classList.add('is-active');
+    document.body.classList.add('scroll-lock');
   }
   // Buttons
   #renderButtonMore() {
@@ -138,5 +155,9 @@ export default class CataloguePresenter {
   }
   #buttonUpClickHandler = () => {
     this.#catalogHeaderContainer.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  #handleProductClick = async (id) => {
+    this.#selectedProduct = await this.#products.loadProductDetails(id);
+    this.#renderPopup(this.#selectedProduct)
   }
 }
