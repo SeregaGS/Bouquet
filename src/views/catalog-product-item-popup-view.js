@@ -1,32 +1,36 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import { ImageSlider } from '../utils/image-slider'
 import { createImageSliderPopup } from './catalog-product-item-popup-images-view'
 
 const createProductItemPopupTemplate = (flower) => {
-  const {title, price, description } = flower
-  return `
-    <div class="image-slider swiper modal-product__slider">
-      <div class="image-slides-list swiper-wrapper">
-        ${createImageSliderPopup(flower)}
-      <button class="btn-round btn-round--to-left image-slider__button image-slider__button--prev" type="button">
-        <svg width="80" height="85" aria-hidden="true" focusable="false">
-          <use xlink:href="#icon-round-button"></use>
-        </svg>
-      </button>
-      <button class="btn-round btn-round--to-right image-slider__button image-slider__button--next" type="button">
-        <svg width="80" height="85" aria-hidden="true" focusable="false">
-          <use xlink:href="#icon-round-button"></use>
-        </svg>
-      </button>
-    </div>
-    <div class="product-description">
-      <div class="product-description__header">
-        <h3 class="title title--h2">${title}</h3>
-        <b class="price price--size-big">${price}<span>Р</span></b>
-      </div>
-      <p class="text text--size-40">${description}</p>
-      <button class="btn btn--outlined btn--full-width product-description__button" type="button" data-focus>отложить
-      </button>
-    </div>
+  const {title, price, description, isAdding } = flower
+  return `<div>
+           <div class="image-slider swiper modal-product__slider">
+              <div class="image-slides-list swiper-wrapper">
+                ${createImageSliderPopup(flower).join('')}
+              </div>
+              <button class="btn-round btn-round--to-left image-slider__button image-slider__button--prev" type="button">
+                  <svg width="80" height="85" aria-hidden="true" focusable="false">
+                    <use xlink:href="#icon-round-button"></use>
+                  </svg>
+                </button>
+              <button class="btn-round btn-round--to-right image-slider__button image-slider__button--next" type="button">
+                  <svg width="80" height="85" aria-hidden="true" focusable="false">
+                    <use xlink:href="#icon-round-button"></use>
+                  </svg>
+                </button>
+           </div>
+          <div class="product-description">
+            <div class="product-description__header">
+              <h3 class="title title--h2">${title}</h3>
+              <b class="price price--size-big">${price}<span>Р</span></b>
+            </div>
+            <p class="text text--size-40">${description}</p>
+            <button class="btn btn--outlined btn--full-width product-description__button" type="button" data-focus>
+              ${!isAdding ? 'отложить' : 'отложено'}
+            </button>
+          </div>
+        </div>
 `
 }
 export default class ProductItemPopupView extends AbstractStatefulView {
@@ -38,8 +42,27 @@ export default class ProductItemPopupView extends AbstractStatefulView {
     return createProductItemPopupTemplate(this._state);
   }
 
+  setCloseButtonClickHandler = (callback)=> {
+    this._callback.closeButtonClick = callback;
+    const buttonClose = document.querySelector('.modal-product__btn-close');
+    if (buttonClose) {
+      buttonClose.addEventListener('click', this.#closeButtonClickHandler);
+      buttonClose.removeEventListener('click', this.#closeButtonClickHandler);
+    }
+  }
+
+  #closeButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeButtonClick();
+  }
+
+  _restoreHandlers = () => {
+    this.setCloseButtonClickHandler(this._callback.closeButtonClick);
+  }
+
   static parseFlowerToState = (flower) => ({
     ...flower,
+    isAdding: false,
   });
 
 }
