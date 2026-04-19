@@ -18,7 +18,7 @@ export default class ProductPresenter {
     const prevFlowerCardComponent = this.#productComponent;
 
     this.#productComponent = new ProductItemView(this.#product);
-    this.#productComponent.setOpenPopupHandler(this.#idProduct)
+    this.#productComponent.setOpenPopupHandler(this.#idProduct);
 
     if(prevFlowerCardComponent === null) {
       return render(this.#productComponent, this.#container.element);
