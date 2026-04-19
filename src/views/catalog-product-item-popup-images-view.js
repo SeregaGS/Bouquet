@@ -1,5 +1,4 @@
-export const createImageSliderPopup = ({images, authorPhoto}) => {
-  return images.map((image) => {
+export const createImageSliderPopup = ({images, authorPhoto}) => images.map((image) => {
     return `<div class="image-slides-list__item swiper-slide">
               <div class="image-slide">
                 <picture>
@@ -9,5 +8,5 @@ export const createImageSliderPopup = ({images, authorPhoto}) => {
                 <span class="image-author image-slide__author">${authorPhoto}</span>
               </div>
              </div>
-          `});
-};
+          `
+});
