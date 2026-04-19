@@ -10,6 +10,8 @@ import ProductPresenter from './product-presenter';
 import ProductPopupPresenter from './product-popup-presenter';
 import { render, replace, remove } from '../framework/render';
 import { SortType, COUNT_FLOWERS } from "../const";
+import { ImageSlider } from "../utils/image-slider";
+import { modals } from "../modals/init-modals";
 
 export default class CataloguePresenter {
   #catalogContainer = new CatalogContainerView();
@@ -87,18 +89,16 @@ export default class CataloguePresenter {
     this.#productPresenter.set(flower.id, productPresenter);
   }
   #renderPopup = (id) => {
-    const popupContainer = document.querySelector('.modal--product');
-    const contentContainer = popupContainer.querySelector('.modal-product');
+    const contentContainer = document.querySelector('.modal-product');
+    const imageSlider = new ImageSlider(".image-slider");
 
-    if (this.#productPopupPresenter) {
-      this.#productPopupPresenter.destroy();
+    if(this.#productPopupPresenter) {
+      this.#removeProductPopup();
     }
-
-    this.#productPopupPresenter = new ProductPopupPresenter(contentContainer)
+    this.#productPopupPresenter = new ProductPopupPresenter(contentContainer, this.#removeProductPopup)
     this.#productPopupPresenter.init(id);
-
-    popupContainer.classList.add('is-active');
-    document.body.classList.add('scroll-lock');
+    modals.open('popup-data-attr');
+    imageSlider.init();
   }
   // Buttons
   #renderButtonMore() {
@@ -131,13 +131,22 @@ export default class CataloguePresenter {
     }
     this.#sortByPrice.buttonClickHandler(this.#sortTypeChange);
   }
-  // Clear Products presenter and buttons
+  // Clear and remove
   #clearFlowersList = () => {
     this.#productPresenter.forEach((presenter) => presenter.destroy());
     this.#productPresenter.clear();
     this.#renderFlowersCount = COUNT_FLOWERS;
     remove(this.#catalogButtonMore);
     remove(this.#catalogButtonUpView);
+  }
+  #removeProductPopup = () => {
+    if (!this.#productPopupPresenter) {
+      return;
+    }
+    this.#productPopupPresenter.destroy();
+    this.#productPopupPresenter = null;
+    this.#selectedProduct = null;
+    modals.close('popup-data-attr');
   }
   // Handler, Click and Change
   #buttonMoreClickHandler = () => {
@@ -158,6 +167,7 @@ export default class CataloguePresenter {
   }
   #handleProductClick = async (id) => {
     this.#selectedProduct = await this.#products.loadProductDetails(id);
-    this.#renderPopup(this.#selectedProduct)
+    this.#renderPopup(this.#selectedProduct);
   }
+
 }
