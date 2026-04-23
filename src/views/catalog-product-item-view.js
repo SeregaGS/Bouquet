@@ -2,7 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { TypeLabelProducts, TEXT_DESCRIPTION_LENGTH } from '../const';
 
 const createProductItemTemplate = ({title, description, price, previewImage, type}) => {
-  const label = TypeLabelProducts[type] || TypeLabelProducts.default;
+  const label = TypeLabelProducts[type] || TypeLabelProducts.all;
   return `
   <li class="catalogue__item">
     <div class="item-card">
