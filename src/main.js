@@ -8,6 +8,7 @@ import MainPresenter from "./presenter/main-presenter";
 
 import FlowersApiServices from "./api-services/flowers-api";
 import FlowersModels from "./model/products-model";
+import FilterModel from './model/filter-reason-model';
 
 const AUTHORIZATION = 'Basic hS2sfS44wcW2Sa2w';
 const END_POINT = 'https://grading.objects.htmlacademy.pro/flowers-shop/';
@@ -26,10 +27,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const flowersProducts = new FlowersModels(new FlowersApiServices(END_POINT, AUTHORIZATION));
 
+  const filterModel = new FilterModel();
+
   const headerCartPresenter = new HeaderCartPresenter(headerContainerCount);
   const heroPresenter = new HeroPresenter(mainContainer);
-  const mainPresenter = new MainPresenter(mainContainer, flowersProducts);
-
+  const mainPresenter = new MainPresenter(mainContainer, flowersProducts, filterModel);
   headerCartPresenter.init();
   heroPresenter.init();
   mainPresenter.init();
