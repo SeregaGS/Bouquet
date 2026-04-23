@@ -1,10 +1,9 @@
 import AdvantagesView from '../views/advantages-view';
 import MissionView from '../views/mission-view';
-import FilterReasonView from '../views/filter-reason-view';
-import FilterColorContainer from '../views/filter-color-container-view';
 import LoadingView from '../views/loading-view';
 import LoadingErrorView from '../views/error-loading-view';
-
+import FilterReasonPresenter from '../presenter/filter-reason-presenter'
+import FilterColorPresenter from '../presenter/filter-color-presenter'
 import CataloguePresenter from "../presenter/catalog-presenter";
 import {render, remove} from '../framework/render';
 
@@ -14,31 +13,25 @@ export default class MainPresenter {
 
   #advantagesView = null;
   #missionView = null;
-  #filterReasonView = null;
-  #filterColorContainer = null;
+  #filterReasonPresenter = null;
+  #filterColorPresenter = null;
 
   #cataloguePresenter = null;
   #isLoading= true;
 
   #container = null;
   #products = null;
+  #filterType = null;
 
-  constructor(container, products) {
+  constructor(container, products, filterReason) {
     this.#container = container;
     this.#products = products;
+    this.#filterType = filterReason;
 
     this.#products.addObserver(this.#onData);
   }
   init = () => {
     this.#renderCatalog();
-  }
-  #renderFilterColorContainerComponent() {
-    this.#filterColorContainer = new FilterColorContainer();
-    render(this.#filterColorContainer, this.#container);
-  }
-  #renderFilterReasonComponent() {
-    this.#filterReasonView = new FilterReasonView();
-    render(this.#filterReasonView, this.#container);
   }
   #renderMissionComponent() {
     this.#missionView = new MissionView();
@@ -57,19 +50,20 @@ export default class MainPresenter {
     if(this.#isLoading) {
       return render(this.#loadingComponent, this.#container);
     }
-    remove(this.#loadingComponent)
+    remove(this.#loadingComponent);
 
     if (this.#products.get().length === 0) {
       return render(this.#loadingErrorComponent, this.#container);
     }
     remove(this.#loadingErrorComponent);
-
     // this.#renderMissionComponent();
     // this.#renderAdvantagesComponent();
-    this.#renderFilterReasonComponent();
-    this.#renderFilterColorContainerComponent()
+    this.#filterReasonPresenter = new FilterReasonPresenter(this.#container, this.#filterType);
+    this.#filterReasonPresenter.init();
+    this.#filterColorPresenter = new FilterColorPresenter(this.#container, this.#filterType);
+    this.#filterColorPresenter.init();
+    this.#cataloguePresenter = new CataloguePresenter(this.#container, this.#products, this.#filterType);
+    this.#cataloguePresenter.init();
 
-    this.#cataloguePresenter = new CataloguePresenter(this.#container, this.#products);
-    this.#cataloguePresenter.init()
   }
 }
