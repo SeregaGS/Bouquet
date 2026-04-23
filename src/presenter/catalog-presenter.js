@@ -12,6 +12,7 @@ import { render, replace, remove } from '../framework/render';
 import { SortType, COUNT_FLOWERS } from "../const";
 import { ImageSlider } from "../utils/image-slider";
 import { modals } from "../modals/init-modals";
+import { filterReason } from '../utils/filter-reason';
 
 export default class CataloguePresenter {
   #catalogContainer = new CatalogContainerView();
@@ -32,27 +33,41 @@ export default class CataloguePresenter {
   #selectedProduct = null;
 
   #renderFlowersCount = COUNT_FLOWERS;
+  #filterModel = null;
 
-  constructor(container, products) {
+  constructor(container, products, filterModel) {
     this.#container = container;
     this.#products = products;
+    this.#filterModel = filterModel;
+
+    this.#filterModel.addObserver(this.#onFilterModelChange);
   }
 
   init() {
+    this.#renderCatalogContainer(this.#container);
     this.#renderCatalog();
+    console.log(this.flowers)
   }
 
   get flowers () {
-    const flowers = [...this.#products.get()];
+    let flowers = [...this.#products.get()];
+
+    const currentFilterReason = this.#filterModel.get();
+
+    if (filterReason[currentFilterReason]) {
+      flowers = filterReason[currentFilterReason](flowers)
+    }
 
     switch (this.#currentSortByPrice) {
       case SortType.INCREMENT:
-        return flowers.sort((a, b) => a.price - b.price);
+        flowers.sort((a, b) => a.price - b.price);
+        break;
       case SortType.DECREMENT:
-        return flowers.sort((a, b) => b.price - a.price);
-      default:
-        return flowers;
+        flowers.sort((a, b) => b.price - a.price);
+        break;
     }
+
+    return flowers;
   }
   // Render containers
   #renderCatalogContainer(container) {
@@ -64,16 +79,18 @@ export default class CataloguePresenter {
   }
   // Render Catalog
   #renderCatalog() {
-    const flowers = this.flowers.slice(0, Math.min(this.#products.get().length, COUNT_FLOWERS));
+    const allFlowers = this.flowers;
+    const totalFlowers = allFlowers.length;
 
-    this.#renderCatalogContainer(this.#container)
+    const flowersToRender = allFlowers.slice(0, Math.min(totalFlowers, COUNT_FLOWERS));
+
     this.#renderSort(this.#catalogHeaderContainer.element);
-    this.#renderCatalogList(flowers);
+    this.#renderCatalogList(flowersToRender, totalFlowers);
   }
-  #renderCatalogList = (flowers) => {
+  #renderCatalogList = (flowers, total) => {
     this.#renderFlowers(flowers, this.#catalogProductListContainer);
 
-    if (this.flowers.length > COUNT_FLOWERS) {
+    if (total > COUNT_FLOWERS) {
       this.#renderButtonMore();
       this.#renderButtonUp();
     }
@@ -85,7 +102,9 @@ export default class CataloguePresenter {
   }
   #renderFlower = (flower, container) => {
     const productPresenter = new ProductPresenter(container, this.#handleProductClick);
+
     productPresenter.init(flower);
+
     this.#productPresenter.set(flower.id, productPresenter);
   }
   #renderPopup = (id) => {
@@ -114,11 +133,11 @@ export default class CataloguePresenter {
     if (this.#currentSortByPrice === sortType) {
       return;
     }
+
     this.#currentSortByPrice = sortType;
-    const flowers = this.flowers.slice(0, Math.min(this.flowers.length, COUNT_FLOWERS));
+
     this.#clearFlowersList();
-    this.#renderSort(this.#catalogHeaderContainer.element);
-    this.#renderCatalogList(flowers);
+    this.#renderCatalog();
   }
   #renderSort = (container)=> {
     if (!this.#sortByPrice) {
@@ -150,15 +169,17 @@ export default class CataloguePresenter {
   }
   // Handler, Click and Change
   #buttonMoreClickHandler = () => {
-    const flowersCount = this.flowers.length;
-    const newCountFlowers = Math.min(flowersCount, this.#renderFlowersCount + COUNT_FLOWERS);
-    const flowers = this.flowers.slice(this.#renderFlowersCount, newCountFlowers);
+    const allFlowers = this.flowers;
+    const totalFlowers = allFlowers.length;
+
+    const newCountFlowers = Math.min(totalFlowers, this.#renderFlowersCount + COUNT_FLOWERS);
+
+    const flowers = allFlowers.slice(this.#renderFlowersCount, newCountFlowers);
 
     this.#renderFlowers(flowers, this.#catalogProductListContainer);
-
     this.#renderFlowersCount += COUNT_FLOWERS;
 
-    if(this.#renderFlowersCount >= flowersCount) {
+    if(this.#renderFlowersCount >= totalFlowers) {
       remove(this.#catalogButtonMore);
     }
   }
@@ -169,5 +190,8 @@ export default class CataloguePresenter {
     this.#selectedProduct = await this.#products.loadProductDetails(id);
     this.#renderPopup(this.#selectedProduct);
   }
-
+  #onFilterModelChange = () => {
+    this.#clearFlowersList();
+    this.#renderCatalog();
+  }
 }
