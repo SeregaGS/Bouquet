@@ -21,6 +21,7 @@ export default class ProductPopupPresenter {
 
     this.#popupComponent = new ProductItemPopupView(this.#product);
     this.#popupComponent.setCloseButtonClickHandler(this.#handleClose);
+    this.#popupComponent.setAddToCartButtonClickHandler(this.#addToCart);
 
     document.addEventListener('keydown', this.#onEscKeyDown);
     document.addEventListener('click', this.#onOverlayClick);
@@ -56,5 +57,8 @@ export default class ProductPopupPresenter {
   }
   #handleClose = () => {
     this.#closeBtnClickHandler();
+  }
+  #addToCart = () => {
+
   }
 }
