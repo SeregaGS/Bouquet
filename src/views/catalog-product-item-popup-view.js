@@ -1,5 +1,4 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { ImageSlider } from '../utils/image-slider'
 import { createImageSliderPopup } from './catalog-product-item-popup-images-view'
 
 const createProductItemPopupTemplate = (flower) => {
@@ -50,14 +49,25 @@ export default class ProductItemPopupView extends AbstractStatefulView {
       buttonClose.removeEventListener('click', this.#closeButtonClickHandler);
     }
   }
+  setAddToCartButtonClickHandler = (callback)=> {
+    this._callback.addToCartButtonClickHandler = callback;
+    this.element
+      .querySelector('.product-description__button')
+      .addEventListener('click', this.#addToCartButtonClickHandler);
+  }
 
   #closeButtonClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.closeButtonClick();
   }
+  #addToCartButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.addToCartButtonClickHandler();
+  }
 
   _restoreHandlers = () => {
     this.setCloseButtonClickHandler(this._callback.closeButtonClick);
+    this.setAddToCartButtonClickHandler(this._callback.addToCartButtonClickHandler);
   }
 
   static parseFlowerToState = (flower) => ({
