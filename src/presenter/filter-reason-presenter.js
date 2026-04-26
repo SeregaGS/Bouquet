@@ -34,7 +34,8 @@ export default class FilterReasonPresenter {
     this.#filterComponent.setFilterTypeClickHandler(this.#filterTypeReason);
 
     if(prevFilterComponent === null) {
-      return render(this.#filterComponent, this.#container);
+      render(this.#filterComponent, this.#container);
+      return;
     }
 
     replace(this.#filterComponent, prevFilterComponent);
@@ -49,7 +50,9 @@ export default class FilterReasonPresenter {
     if(this.#filter.get() === filterType) {
       return;
     }
-
-    this.#filter.set(UpdateType.MAJOR, filterType);
+    this.#filter.set(UpdateType.MINOR, filterType);
+  }
+  destroy() {
+    remove(this.#filterComponent);
   }
 }
