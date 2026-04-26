@@ -6,7 +6,7 @@ export default class ProductPresenter {
   #product = null;
 
   #productComponent = null;
-  #handleDataChange;
+  #handleDataChange = null;
 
   constructor(container, handleDataChange) {
     this.#container = container;
@@ -18,20 +18,24 @@ export default class ProductPresenter {
     const prevFlowerCardComponent = this.#productComponent;
 
     this.#productComponent = new ProductItemView(this.#product);
-    this.#productComponent.setOpenPopupHandler(this.#idProduct);
+    this.#productComponent.setOpenPopupHandler(this.#handleOpenPopup);
+    this.#productComponent.setAddToCart(this.#clickAddToCartHandler);
 
     if(prevFlowerCardComponent === null) {
-      return render(this.#productComponent, this.#container.element);
+      render(this.#productComponent, this.#container.element);
+      return;
     }
 
     replace(this.#productComponent, prevFlowerCardComponent);
     remove(prevFlowerCardComponent);
   }
-
   destroy() {
     remove(this.#productComponent);
   }
-  #idProduct = () => {
+  #handleOpenPopup = () => {
     this.#handleDataChange(this.#product.id);
+  }
+  #clickAddToCartHandler = () => {
+    console.log('Заглушка');
   }
 }
