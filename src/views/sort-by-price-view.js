@@ -52,10 +52,10 @@ export default class SortByPriceView extends AbstractView {
 
   #buttonClickHandler = (evt) => {
     evt.preventDefault();
-    const link = evt.target.closest('.sorting-price__link');
+    const target = evt.target.closest('[data-sort-by-price]');
 
-    if(link) {
-      this._callback.buttonClick(link.dataset.sortByPrice);
+    if(target) {
+      this._callback.buttonClick(target.dataset.sortByPrice);
     }
   }
 }
