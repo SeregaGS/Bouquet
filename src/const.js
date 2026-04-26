@@ -27,6 +27,8 @@ export const FILTER_TYPE_COLOR = {
   yellow: 'жёлтый',
   pink: 'розовый'
 }
+export const ALL_TYPE = 'all';
+
 export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
