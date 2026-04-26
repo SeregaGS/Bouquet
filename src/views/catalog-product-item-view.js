@@ -1,7 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { TypeLabelProducts, TEXT_DESCRIPTION_LENGTH } from '../const';
 
-const createProductItemTemplate = ({title, description, price, previewImage, type}) => {
+const createProductItemTemplate = (flower) => {
+  const {title, description, price, previewImage, type} = flower
   const label = TypeLabelProducts[type] || TypeLabelProducts.all;
   return `
   <li class="catalogue__item">
@@ -38,7 +39,7 @@ const createProductItemTemplate = ({title, description, price, previewImage, typ
 export default class ProductItemView extends AbstractStatefulView {
   constructor(flower) {
     super();
-    this._state = ProductItemView.parseFlowerToState(flower)
+    this._state = ProductItemView.parseStateToFlower(flower);
   }
   get template() {
     return createProductItemTemplate(this._state);
@@ -48,12 +49,24 @@ export default class ProductItemView extends AbstractStatefulView {
     this._callback.openPopup = callback;
     this.element.querySelector('.item-card__btn').addEventListener('click', this.#clickOpenPopup);
   }
+  setAddToCart(callback) {
+    this._callback.addToCart = callback;
+    this.element.querySelector('.button-heart').addEventListener('click', this.#clickAddToCartHandler);
+  }
+  #clickAddToCartHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.addToCart();
+  }
   #clickOpenPopup = (evt) => {
     evt.preventDefault();
     this._callback.openPopup();
   }
+  _restoreHandlers() {
+    this.setOpenPopupHandler(this._callback.openPopup);
+    this.setAddToCart(this._callback.addToCart);
+  }
 
-  static parseFlowerToState = (flower) => ({
+  static parseStateToFlower = (flower) => ({
     ...flower,
   });
 }
