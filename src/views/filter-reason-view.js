@@ -7,16 +7,17 @@ const createFilterReasonItem = ({key, name}, index, currentFilters) => {
         <input
           class="filter-field-text__input filter-reason__form-field--for-${key} filter-reason__form-field"
           type="radio"
-          id="filter-reason-field-id-${key}"
+          id="filter-reason-field-id-${index}"
           name="reason"
           value="for-${key}"
+          data-filter-reason="${key}"
           ${key === currentFilters ? 'checked' : ''}
           >
         <label
           class="filter-field-text__label"
           for="filter-reason-field-id-${index}"
           >
-          <span class="filter-field-text__text" data-filter-reason="${key}">${TypeLabelProducts[name]}</span>
+          <span class="filter-field-text__text">${TypeLabelProducts[name]}</span>
         </label>
        </div>`
 }
@@ -53,12 +54,13 @@ export default class FilterReasonView extends AbstractView {
 
   setFilterTypeClickHandler(callback) {
     this._callback.filterType = callback;
-    this.element.addEventListener('click', this.#filterTypeHandler);
+    this.element
+      .querySelector('.filter-reason__form')
+      .addEventListener('change', this.#filterTypeHandler);
   }
 
   #filterTypeHandler = (evt) => {
-    evt.preventDefault();
-    if(evt.target.dataset.filterReason === undefined) {
+    if(evt.target.tagName !== 'INPUT') {
       return;
     }
     this._callback.filterType(evt.target.dataset.filterReason);
