@@ -6,39 +6,38 @@ import CatalogButtonMoreView from '../views/catalog-button-more-view';
 import CatalogButtonUpView from '../views/catalog-button-up-view';
 import CatalogProductListView from '../views/catalog-product-list-view';
 import SortByPriceView from '../views/sort-by-price-view';
+import CatalogNoItemView from '../views/catalog-no-items-view';
 import ProductPresenter from './product-presenter';
-import ProductPopupPresenter from './product-popup-presenter';
 import { render, replace, remove } from '../framework/render';
 import { SortType, COUNT_FLOWERS } from "../const";
-import { ImageSlider } from "../utils/image-slider";
-import { modals } from "../modals/init-modals";
-import { filterReason } from '../utils/filter-reason';
+import { filterReason, filterColors } from '../utils/filter-reason';
 
 export default class CataloguePresenter {
   #catalogContainer = new CatalogContainerView();
   #catalogWrapContainer = new CatalogContainerWrapView();
   #catalogHeaderContainer = new CatalogueHeaderContainerView();
+  #catalogProductListContainer = new CatalogProductListView();
+  #catalogNoItems = new CatalogNoItemView();
   #catalogButtonContainer = new CatalogButtonWrapView();
   #catalogButtonMore = new CatalogButtonMoreView();
   #catalogButtonUpView = new CatalogButtonUpView();
-  #catalogProductListContainer = new CatalogProductListView();
 
   #sortByPrice = null;
   #currentSortByPrice;
   #productPresenter = new Map();
-  #productPopupPresenter = null;
 
   #container = null;
   #products = null;
-  #selectedProduct = null;
 
   #renderFlowersCount = COUNT_FLOWERS;
   #filterModel = null;
+  #selectPopup = null
 
-  constructor(container, products, filterModel) {
+  constructor(container, products, filterModel, selectPopup) {
     this.#container = container;
     this.#products = products;
     this.#filterModel = filterModel;
+    this.#selectPopup = selectPopup;
 
     this.#filterModel.addObserver(this.#onFilterModelChange);
   }
@@ -46,17 +45,19 @@ export default class CataloguePresenter {
   init() {
     this.#renderCatalogContainer(this.#container);
     this.#renderCatalog();
-    console.log(this.flowers)
   }
 
   get flowers () {
     let flowers = [...this.#products.get()];
 
     const currentFilterReason = this.#filterModel.get();
+    const currentFilterColor = this.#filterModel.getColors();
 
     if (filterReason[currentFilterReason]) {
       flowers = filterReason[currentFilterReason](flowers)
     }
+
+    flowers = filterColors(flowers, currentFilterColor);
 
     switch (this.#currentSortByPrice) {
       case SortType.INCREMENT:
@@ -69,6 +70,7 @@ export default class CataloguePresenter {
 
     return flowers;
   }
+
   // Render containers
   #renderCatalogContainer(container) {
     render(this.#catalogContainer, container);
@@ -85,6 +87,11 @@ export default class CataloguePresenter {
     const flowersToRender = allFlowers.slice(0, Math.min(totalFlowers, COUNT_FLOWERS));
 
     this.#renderSort(this.#catalogHeaderContainer.element);
+
+    if(totalFlowers === 0) {
+      render (this.#catalogNoItems, this.#catalogWrapContainer.element);
+      return;
+    }
     this.#renderCatalogList(flowersToRender, totalFlowers);
   }
   #renderCatalogList = (flowers, total) => {
@@ -101,23 +108,11 @@ export default class CataloguePresenter {
     })
   }
   #renderFlower = (flower, container) => {
-    const productPresenter = new ProductPresenter(container, this.#handleProductClick);
+    const productPresenter = new ProductPresenter(container, this.#selectPopup);
 
     productPresenter.init(flower);
 
     this.#productPresenter.set(flower.id, productPresenter);
-  }
-  #renderPopup = (id) => {
-    const contentContainer = document.querySelector('.modal-product');
-    const imageSlider = new ImageSlider(".image-slider");
-
-    if(this.#productPopupPresenter) {
-      this.#removeProductPopup();
-    }
-    this.#productPopupPresenter = new ProductPopupPresenter(contentContainer, this.#removeProductPopup)
-    this.#productPopupPresenter.init(id);
-    modals.open('popup-data-attr');
-    imageSlider.init();
   }
   // Buttons
   #renderButtonMore() {
@@ -140,15 +135,17 @@ export default class CataloguePresenter {
     this.#renderCatalog();
   }
   #renderSort = (container)=> {
-    if (!this.#sortByPrice) {
-      this.#sortByPrice = new SortByPriceView(this.#currentSortByPrice);
-      render(this.#sortByPrice, container);
-    } else {
-      const updateSortByPrice = new SortByPriceView(this.#currentSortByPrice);
-      replace(updateSortByPrice, this.#sortByPrice)
-      this.#sortByPrice = updateSortByPrice;
-    }
+    const prevFilterComponent = this.#sortByPrice;
+
+    this.#sortByPrice = new SortByPriceView(this.#currentSortByPrice);
     this.#sortByPrice.buttonClickHandler(this.#sortTypeChange);
+
+    if(prevFilterComponent === null) {
+      render(this.#sortByPrice, container);
+      return;
+    }
+      replace(this.#sortByPrice, prevFilterComponent);
+      remove(prevFilterComponent);
   }
   // Clear and remove
   #clearFlowersList = () => {
@@ -157,15 +154,7 @@ export default class CataloguePresenter {
     this.#renderFlowersCount = COUNT_FLOWERS;
     remove(this.#catalogButtonMore);
     remove(this.#catalogButtonUpView);
-  }
-  #removeProductPopup = () => {
-    if (!this.#productPopupPresenter) {
-      return;
-    }
-    this.#productPopupPresenter.destroy();
-    this.#productPopupPresenter = null;
-    this.#selectedProduct = null;
-    modals.close('popup-data-attr');
+    remove(this.#catalogNoItems);
   }
   // Handler, Click and Change
   #buttonMoreClickHandler = () => {
@@ -185,10 +174,6 @@ export default class CataloguePresenter {
   }
   #buttonUpClickHandler = () => {
     this.#catalogHeaderContainer.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  #handleProductClick = async (id) => {
-    this.#selectedProduct = await this.#products.loadProductDetails(id);
-    this.#renderPopup(this.#selectedProduct);
   }
   #onFilterModelChange = () => {
     this.#clearFlowersList();
