@@ -41,13 +41,8 @@ export default class ProductItemPopupView extends AbstractStatefulView {
     return createProductItemPopupTemplate(this._state);
   }
 
-  setCloseButtonClickHandler = (callback)=> {
+  setCloseClickHandler = (callback)=> {
     this._callback.closeButtonClick = callback;
-    const buttonClose = document.querySelector('.modal-product__btn-close');
-    if (buttonClose) {
-      buttonClose.addEventListener('click', this.#closeButtonClickHandler);
-      buttonClose.removeEventListener('click', this.#closeButtonClickHandler);
-    }
   }
   setAddToCartButtonClickHandler = (callback)=> {
     this._callback.addToCartButtonClickHandler = callback;
@@ -56,17 +51,13 @@ export default class ProductItemPopupView extends AbstractStatefulView {
       .addEventListener('click', this.#addToCartButtonClickHandler);
   }
 
-  #closeButtonClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.closeButtonClick();
-  }
   #addToCartButtonClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.addToCartButtonClickHandler();
   }
 
   _restoreHandlers = () => {
-    this.setCloseButtonClickHandler(this._callback.closeButtonClick);
+    this.setCloseClickHandler(this._callback.closeButtonClick);
     this.setAddToCartButtonClickHandler(this._callback.addToCartButtonClickHandler);
   }
 
