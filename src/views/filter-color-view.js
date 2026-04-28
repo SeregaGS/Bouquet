@@ -2,8 +2,8 @@ import AbstractView from "../framework/view/abstract-view";
 
 const createFilterColorItemsTemplate = ({key, name}, index, currentFilter) => {
   const isChecked = currentFilter.includes(key) ? 'checked' : '';
-
-  return `<div class="filter-field-img filter-color__form-field">
+  return `
+          <div class="filter-field-img filter-color__form-field">
             <input
               class="filter-field-img__input filter-color__form-field"
               type="checkbox"
@@ -27,11 +27,11 @@ const createFilterColorItemsTemplate = ({key, name}, index, currentFilter) => {
               <span class="filter-field-img__text">${name}</span>
             </label>
           </div>`
-}
+};
 
 const createFilterColorContainerTemplate = (filters, currentFilter) => {
   const filtersColor = filters.map((filter, index) =>
-    createFilterColorItemsTemplate(filter, index, currentFilter)).join('')
+    createFilterColorItemsTemplate(filter, index, currentFilter)).join('');
   return `
       <section class="filter-color">
         <div class="container">
@@ -45,7 +45,7 @@ const createFilterColorContainerTemplate = (filters, currentFilter) => {
       </div>
     </section>
   `
-}
+};
 
 export default class FilterColorView extends AbstractView {
   #filters = null;
@@ -63,6 +63,13 @@ export default class FilterColorView extends AbstractView {
   setFilterTypeClickHandler(callback) {
     this._callback.filterType = callback;
     this.element.addEventListener('change', this.#filterTypeHandler);
+  }
+  updateActiveFilters = (currentFilter) => {
+    const inputs = this.element.querySelectorAll('input[name="colors"]')
+    inputs.forEach(input => {
+      const colorValue = input.dataset.filterColor;
+      input.checked = currentFilter.includes(colorValue);
+    })
   }
 
   #filterTypeHandler = (evt) => {
