@@ -1,4 +1,5 @@
 import ProductItemPopupView from '../views/catalog-product-item-popup-view';
+import { ImageSlider } from "../utils/image-slider";
 import { render, replace, remove } from '../framework/render';
 
 export default class ProductPopupPresenter {
@@ -7,58 +8,44 @@ export default class ProductPopupPresenter {
 
   #popupComponent = null;
 
-  #closeBtnClickHandler = null;
+  #closePopup = null;
 
-  constructor(container, closeBtnClickHandler) {
+  constructor(container, closePopup) {
     this.#container = container;
-    this.#closeBtnClickHandler = closeBtnClickHandler;
+    this.#closePopup = closePopup;
   }
 
   init = (flower) => {
     this.#product = flower;
+    this.#container.scrollTop = 0;
 
     const prevFlowerCardComponent = this.#popupComponent;
 
     this.#popupComponent = new ProductItemPopupView(this.#product);
-    this.#popupComponent.setCloseButtonClickHandler(this.#handleClose);
-    this.#popupComponent.setAddToCartButtonClickHandler(this.#addToCart);
 
-    document.addEventListener('keydown', this.#onEscKeyDown);
-    document.addEventListener('click', this.#onOverlayClick);
+    this.#popupComponent.setCloseClickHandler(this.#closePopup);
+    this.#popupComponent.setAddToCartButtonClickHandler(this.#addToCart);
 
     if (prevFlowerCardComponent === null) {
       render(this.#popupComponent, this.#container);
-    } else {
-      replace(this.#popupComponent, prevFlowerCardComponent);
-      remove(prevFlowerCardComponent);
+      this.#initSlider();
+      return;
     }
-
+    replace(this.#popupComponent, prevFlowerCardComponent);
+    remove(prevFlowerCardComponent);
   }
-
+  #initSlider = () => {
+    const imageSlider = new ImageSlider(".image-slider");
+    imageSlider.init();
+  }
+  #addToCart = () => {
+    console.log('заглушка')
+  }
   destroy() {
     if(this.#popupComponent === null) {
       return;
     }
     remove(this.#popupComponent);
     this.#popupComponent = null;
-    document.removeEventListener('keydown', this.#onEscKeyDown);
-    document.removeEventListener('click', this.#onOverlayClick);
-  }
-  #onEscKeyDown = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this.#handleClose();
-    }
-  };
-  #onOverlayClick = (evt) => {
-    if (evt.target.closest('.modal__overlay')) {
-      this.#handleClose()
-    }
-  }
-  #handleClose = () => {
-    this.#closeBtnClickHandler();
-  }
-  #addToCart = () => {
-
   }
 }
