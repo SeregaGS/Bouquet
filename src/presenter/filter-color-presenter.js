@@ -1,6 +1,6 @@
 import FilterColorView from "../views/filter-color-view";
 import { render, remove, replace } from '../framework/render';
-import { FILTER_TYPE_COLOR, UpdateType } from '../const';
+import { FILTER_TYPE_COLOR, UpdateType, ALL_TYPE } from '../const';
 
 export default class FilterColorPresenter {
   #container = null;
@@ -23,26 +23,41 @@ export default class FilterColorPresenter {
   };
 
   init() {
+    if(this.#filterComponent !== null) {
+      return;
+    }
     this.#currentFilter = this.#filter.getColors();
 
-    const prevFilterComponent = this.#filterComponent;
 
     this.#filterComponent = new FilterColorView(this.filters, this.#currentFilter);
     this.#filterComponent.setFilterTypeClickHandler(this.#handleColorChange);
 
-    if(prevFilterComponent === null) {
-      return render(this.#filterComponent, this.#container);
-    }
-
-    replace(this.#filterComponent, prevFilterComponent);
-    remove(prevFilterComponent);
+    render(this.#filterComponent, this.#container)
   };
-  #filterModelEventHandler = () => {
-      this.init();
-    }
+
   #handleColorChange = (filterType) => {
+    if(filterType === ALL_TYPE) {
+      this.#currentFilter = [ALL_TYPE];
+    } else {
+      this.#currentFilter = this.#currentFilter.filter(item => item !== ALL_TYPE);
 
-    console.log('Отправляем в модель:', this.#currentFilter);
+      const index = this.#currentFilter.indexOf(filterType);
+      if(index > -1) {
+        this.#currentFilter.splice(index, 1);
+      } else {
+        this.#currentFilter.push(filterType);
+      }
+      if(this.#currentFilter.length === 0) {
+        this.#currentFilter = [ALL_TYPE];
+      }
+    }
+    this.#filterComponent.updateActiveFilters(this.#currentFilter)
+
+    this.#filter.setColors(UpdateType.MINOR, this.#currentFilter);
   }
-
+  destroy() {
+    remove(this.#filterComponent);
+    this.#filterComponent = null;
+    this.#currentFilter = null;
+  }
 }
