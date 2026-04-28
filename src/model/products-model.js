@@ -2,7 +2,6 @@ import Observable from "../framework/observable";
 
 export default class FlowersModels extends Observable {
   #products = [];
-  #productId;
   #apiServices = null;
 
   constructor(apiServices) {
@@ -12,7 +11,8 @@ export default class FlowersModels extends Observable {
 
   init = async () => {
     try {
-      this.#products = await this.#apiServices.get();
+      const flowers = await this.#apiServices.get();
+      this.#products = flowers.map(FlowersModels.adaptToClient);
     } catch {
       this.#products = [];
     }
@@ -22,9 +22,17 @@ export default class FlowersModels extends Observable {
 
   loadProductDetails = async (productId) => {
     try {
-      return this.#productId = await this.#apiServices.getProductId(productId);
+      const flower = await this.#apiServices.getProductId(productId);
+      return FlowersModels.adaptToClient(flower);
     } catch(error) {
       throw error;
     }
+  }
+
+  static adaptToClient(flowers) {
+    return {
+      ...flowers,
+      isAdding: false
+    };
   }
 };
