@@ -11,28 +11,20 @@ export default class FlowersModels extends Observable {
 
   init = async () => {
     try {
-      const flowers = await this.#apiServices.get();
-      this.#products = flowers.map(FlowersModels.adaptToClient);
+      this.#products = await this.#apiServices.get();
     } catch {
       this.#products = [];
     }
-    this._notify();
+    this._notify('EXTRA');
   }
   get = () => this.#products
 
   loadProductDetails = async (productId) => {
     try {
-      const flower = await this.#apiServices.getProductId(productId);
-      return FlowersModels.adaptToClient(flower);
+      return await this.#apiServices.getProductId(productId);
     } catch(error) {
       throw error;
     }
   }
 
-  static adaptToClient(flowers) {
-    return {
-      ...flowers,
-      isAdding: false
-    };
-  }
 };
