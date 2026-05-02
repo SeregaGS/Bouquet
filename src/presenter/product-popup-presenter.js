@@ -9,19 +9,26 @@ export default class ProductPopupPresenter {
   #popupComponent = null;
 
   #closePopup = null;
+  #slider = null;
+  #cartModel = null;
 
-  constructor(container, closePopup) {
+
+  constructor(container, closePopup, cartModel) {
     this.#container = container;
     this.#closePopup = closePopup;
+    this.#cartModel = cartModel;
+
+    this.#cartModel.addObserver(this.#handleModelChange);
   }
 
   init = (flower) => {
     this.#product = flower;
+    const data = this.#cartModel.get().products.hasOwnProperty(this.#product.id);
     this.#container.scrollTop = 0;
 
     const prevFlowerCardComponent = this.#popupComponent;
 
-    this.#popupComponent = new ProductItemPopupView(this.#product);
+    this.#popupComponent = new ProductItemPopupView(this.#product, data);
 
     this.#popupComponent.setCloseClickHandler(this.#closePopup);
     this.#popupComponent.setAddToCartButtonClickHandler(this.#addToCart);
@@ -31,21 +38,38 @@ export default class ProductPopupPresenter {
       this.#initSlider();
       return;
     }
+
     replace(this.#popupComponent, prevFlowerCardComponent);
     remove(prevFlowerCardComponent);
+    this.#initSlider();
   }
   #initSlider = () => {
-    const imageSlider = new ImageSlider(".image-slider");
-    imageSlider.init();
+    this.#slider = new ImageSlider(".image-slider");
+    this.#slider.init();
   }
+
   #addToCart = () => {
-    console.log('заглушка')
+    const cartData = this.#cartModel.get();
+
+    if(cartData.products.hasOwnProperty(this.#product.id)) {
+      this.#cartModel.delete(this.#product);
+    } else {
+      this.#cartModel.add(this.#product);
+    }
+  }
+  #handleModelChange = () => {
+    this.init(this.#product);
   }
   destroy() {
+    this.#cartModel.removeObserver(this.#handleModelChange);
+
     if(this.#popupComponent === null) {
       return;
     }
+
     remove(this.#popupComponent);
     this.#popupComponent = null;
+    this.#slider = null;
+    this.#product = null;
   }
 }
