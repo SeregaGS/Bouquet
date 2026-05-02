@@ -7,7 +7,9 @@ import HeroPresenter from "./presenter/hero-presenter";
 import MainPresenter from "./presenter/main-presenter";
 
 import FlowersApiServices from "./api-services/flowers-api";
+import CartApiServices from './api-services/cart-api'
 import FlowersModels from "./model/products-model";
+import CartModels from './model/cart-models'
 import FilterModel from './model/filter-reason-model';
 
 const AUTHORIZATION = 'Basic hS2sfS44wcW2Sa2w';
@@ -26,14 +28,15 @@ window.addEventListener("DOMContentLoaded", () => {
   const mainContainer = body.querySelector("main");
 
   const flowersProducts = new FlowersModels(new FlowersApiServices(END_POINT, AUTHORIZATION));
+  const cartModel = new CartModels(new CartApiServices(END_POINT, AUTHORIZATION));
 
   const filterModel = new FilterModel();
 
-  const headerCartPresenter = new HeaderCartPresenter(headerContainerCount);
   const heroPresenter = new HeroPresenter(mainContainer);
-  const mainPresenter = new MainPresenter(mainContainer, flowersProducts, filterModel);
-  headerCartPresenter.init();
+  const mainPresenter = new MainPresenter(mainContainer, headerContainerCount, flowersProducts, filterModel, cartModel);
+  cartModel.init();
+  flowersProducts.init();
   heroPresenter.init();
   mainPresenter.init();
-  flowersProducts.init();
+
 });
