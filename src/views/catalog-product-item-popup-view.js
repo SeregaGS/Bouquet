@@ -33,9 +33,9 @@ const createProductItemPopupTemplate = (flower) => {
 `
 }
 export default class ProductItemPopupView extends AbstractStatefulView {
-  constructor(flower) {
+  constructor(flower, isAdding) {
     super();
-    this._state = ProductItemPopupView.parseFlowerToState(flower)
+    this._state = {...flower, isAdding}
   }
   get template() {
     return createProductItemPopupTemplate(this._state);
@@ -60,10 +60,5 @@ export default class ProductItemPopupView extends AbstractStatefulView {
     this.setCloseClickHandler(this._callback.closeButtonClick);
     this.setAddToCartButtonClickHandler(this._callback.addToCartButtonClickHandler);
   }
-
-  static parseFlowerToState = (flower) => ({
-    ...flower,
-    isAdding: false,
-  });
 
 }
