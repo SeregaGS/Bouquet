@@ -4,20 +4,27 @@ import { render, replace, remove } from '../framework/render';
 export default class ProductPresenter {
   #container = null;
   #product = null;
-
+  #cartModel = null
   #productComponent = null;
   #handleDataChange = null;
 
-  constructor(container, handleDataChange) {
+  constructor(container, handleDataChange, cartModel) {
     this.#container = container;
     this.#handleDataChange = handleDataChange;
+    this.#cartModel = cartModel;
+
+    this.#cartModel.addObserver(() => this.init(this.#product));
+
   }
 
   init(flower) {
+    if(!flower) return;
     this.#product = flower;
+
+    const data = this.#cartModel.get().products.hasOwnProperty(this.#product.id);
     const prevFlowerCardComponent = this.#productComponent;
 
-    this.#productComponent = new ProductItemView(this.#product);
+    this.#productComponent = new ProductItemView(this.#product, data);
     this.#productComponent.setOpenPopupHandler(this.#handleOpenPopup);
     this.#productComponent.setAddToCart(this.#clickAddToCartHandler);
 
@@ -36,6 +43,13 @@ export default class ProductPresenter {
     this.#handleDataChange(this.#product.id);
   }
   #clickAddToCartHandler = () => {
-    console.log('Заглушка');
+    const cartData = this.#cartModel.get();
+
+    if(cartData.products.hasOwnProperty(this.#product.id)) {
+      this.#cartModel.delete(this.#product);
+    } else {
+      this.#cartModel.add(this.#product);
+    }
+
   }
 }
