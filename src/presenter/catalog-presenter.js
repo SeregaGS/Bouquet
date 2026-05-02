@@ -31,12 +31,14 @@ export default class CataloguePresenter {
 
   #renderFlowersCount = COUNT_FLOWERS;
   #filterModel = null;
-  #selectPopup = null
+  #selectPopup = null;
+  #cartModel = null
 
-  constructor(container, products, filterModel, selectPopup) {
+  constructor(container, products, filterModel, cartModel, selectPopup) {
     this.#container = container;
     this.#products = products;
     this.#filterModel = filterModel;
+    this.#cartModel = cartModel;
     this.#selectPopup = selectPopup;
 
     this.#filterModel.addObserver(this.#onFilterModelChange);
@@ -108,7 +110,7 @@ export default class CataloguePresenter {
     })
   }
   #renderFlower = (flower, container) => {
-    const productPresenter = new ProductPresenter(container, this.#selectPopup);
+    const productPresenter = new ProductPresenter(container, this.#selectPopup, this.#cartModel);
 
     productPresenter.init(flower);
 
