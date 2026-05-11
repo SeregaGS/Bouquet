@@ -1,9 +1,6 @@
 import "./vendor";
 import { iosVhFix } from "./utils/ios-vh-fix";
 import { initModals } from "./modals/init-modals";
-
-import HeaderCartPresenter from "./presenter/header-cart-presenter";
-import HeroPresenter from "./presenter/hero-presenter";
 import MainPresenter from "./presenter/main-presenter";
 
 import FlowersApiServices from "./api-services/flowers-api";
@@ -25,6 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const body = document.querySelector("body");
   const headerContainerCount = body.querySelector(".header__container");
+  const wrapper = body.querySelector(".wrapper");
   const mainContainer = body.querySelector("main");
 
   const flowersProducts = new FlowersModels(new FlowersApiServices(END_POINT, AUTHORIZATION));
@@ -32,11 +30,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const filterModel = new FilterModel();
 
-  const heroPresenter = new HeroPresenter(mainContainer);
-  const mainPresenter = new MainPresenter(mainContainer, headerContainerCount, flowersProducts, filterModel, cartModel);
-  cartModel.init();
-  flowersProducts.init();
-  heroPresenter.init();
+  const mainPresenter = new MainPresenter(mainContainer, headerContainerCount, wrapper, flowersProducts, filterModel, cartModel);
+
   mainPresenter.init();
+  Promise.all([
+    cartModel.init(),
+    flowersProducts.init()
+  ])
+  // cartModel.init();
+  // flowersProducts.init();
+
 
 });
