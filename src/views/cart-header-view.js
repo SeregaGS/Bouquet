@@ -5,7 +5,7 @@ const createHeaderCartTemplate= ({productCount, sum}) => {
   return `
     <div class="header-count">
       <button class="header-count__btn" type="button">
-        <svg width="60" height="47" aria-hidden="true">
+        <svg width="60" height="47" style="pointer-events: none" aria-hidden="true">
           <use xlink:href="#icon-heart-header"></use>
         </svg>
         <span class="visually-hidden">закрыть</span>
@@ -23,7 +23,7 @@ const createHeaderCartTemplate= ({productCount, sum}) => {
     </div>
   `
 }
-export default class HeaderCartView extends AbstractView {
+export default class CartHeaderView extends AbstractView {
   #cartData = null;
 
   constructor(cartData) {
@@ -34,4 +34,18 @@ export default class HeaderCartView extends AbstractView {
   get template() {
     return createHeaderCartTemplate(this.#cartData);
   }
+
+  setPopupCartHandler = (callback) => {
+    this._callback.popupCart = callback;
+    this.element.addEventListener('click', this.#setPopupCartHandler);
+  }
+  
+  #setPopupCartHandler = (evt) => {
+    evt.preventDefault();
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
+    }
+    this._callback.popupCart();
+  }
+
 }
