@@ -51,9 +51,9 @@ export default class ProductItemPopupView extends AbstractStatefulView {
       .addEventListener('click', this.#addToCartButtonHandler);
   }
 
-  #addToCartButtonHandler= (evt) => {
+  #addToCartButtonHandler = (evt) => {
     evt.preventDefault();
-    this._callback.addToCart();
+    this._callback.addToCart(evt.target);
   }
 
   _restoreHandlers = () => {
