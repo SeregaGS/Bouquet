@@ -41,24 +41,24 @@ export default class ProductItemPopupView extends AbstractStatefulView {
     return createProductItemPopupTemplate(this._state);
   }
 
-  setCloseClickHandler = (callback)=> {
-    this._callback.closeButtonClick = callback;
+  setCloseButtonHandler = (callback)=> {
+    this._callback.closePopup = callback;
   }
-  setAddToCartButtonClickHandler = (callback)=> {
-    this._callback.addToCartButtonClickHandler = callback;
+  setAddToCartButtonHandler = (callback)=> {
+    this._callback.addToCart = callback;
     this.element
       .querySelector('.product-description__button')
-      .addEventListener('click', this.#addToCartButtonClickHandler);
+      .addEventListener('click', this.#addToCartButtonHandler);
   }
 
-  #addToCartButtonClickHandler = (evt) => {
+  #addToCartButtonHandler= (evt) => {
     evt.preventDefault();
-    this._callback.addToCartButtonClickHandler();
+    this._callback.addToCart();
   }
 
   _restoreHandlers = () => {
-    this.setCloseClickHandler(this._callback.closeButtonClick);
-    this.setAddToCartButtonClickHandler(this._callback.addToCartButtonClickHandler);
+    this.setCloseButtonHandler(this._callback.closePopup);
+    this.setAddToCartButtonHandler(this._callback.addToCart);
   }
 
 }
