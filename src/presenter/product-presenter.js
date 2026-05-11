@@ -45,7 +45,7 @@ export default class ProductPresenter {
     const cartData = this.#cartModel.get();
 
     if(cartData?.products?.hasOwnProperty(this.#product.id)) {
-      this.#cartModel.delete(this.#product);
+      this.#cartModel.clear(this.#product);
     } else {
       this.#cartModel.add(this.#product);
     }
