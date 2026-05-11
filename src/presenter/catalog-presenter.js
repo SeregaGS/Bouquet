@@ -119,11 +119,11 @@ export default class CataloguePresenter {
   // Buttons
   #renderButtonMore() {
     render(this.#catalogButtonMore, this.#catalogButtonContainer.element);
-    this.#catalogButtonMore.buttonClickHandler(() => this.#buttonMoreClickHandler());
+    this.#catalogButtonMore.setButtonMoreHandler(() => this.#buttonMoreClickHandler());
   }
   #renderButtonUp() {
     render(this.#catalogButtonUpView, this.#catalogButtonContainer.element);
-    this.#catalogButtonUpView.buttonClickHandler(() => this.#buttonUpClickHandler());
+    this.#catalogButtonUpView.setButtonUpHandler(() => this.#buttonUpClickHandler());
   }
   // Sort of price
   #sortTypeChange = (sortType) => {
@@ -140,7 +140,7 @@ export default class CataloguePresenter {
     const prevFilterComponent = this.#sortByPrice;
 
     this.#sortByPrice = new SortByPriceView(this.#currentSortByPrice);
-    this.#sortByPrice.buttonClickHandler(this.#sortTypeChange);
+    this.#sortByPrice.setButtonMoreHandler(this.#sortTypeChange);
 
     if(prevFilterComponent === null) {
       render(this.#sortByPrice, container);
