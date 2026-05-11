@@ -13,12 +13,12 @@ export default class CatalogButtonUpView extends AbstractView {
     return createCatalogButtonUpTemplate();
   }
 
-  buttonClickHandler(callback) {
-    this._callback.buttonClick = callback;
-    this.element.addEventListener('click', this.#buttonClickHandler);
+  setButtonUpHandler(callback) {
+    this._callback.buttonUp = callback;
+    this.element.addEventListener('click', this.#setButtonUpHandler);
   }
-  #buttonClickHandler = (evt) => {
+  #setButtonUpHandler = (evt) => {
     evt.preventDefault();
-    this._callback.buttonClick();
+    this._callback.buttonUp();
   }
 }
