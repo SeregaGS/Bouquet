@@ -1,26 +1,32 @@
-import HeaderCartView from '../views/header-cart-view';
+import CartHeaderView from '../views/cart-header-view';
 import { render, replace, remove } from '../framework/render';
 
-export default class HeaderCartPresenter {
+export default class CartHeaderPresenter {
   #container = null;
   #headerCartComponents = null;
   #cartModel = null
 
   #isLoading = true;
+  #cartClick = null;
 
-  constructor(container, cartModel) {
+  constructor(container, cartModel, cartClick) {
     this.#container = container;
     this.#cartModel = cartModel;
+    this.#cartClick = cartClick;
+
     this.#cartModel.addObserver(this.#loadData);
   }
 
   init = () => {
     const prevHeaderCartComponents = this.#headerCartComponents;
     const cartModels = this.#cartModel.get();
-    this.#headerCartComponents = new HeaderCartView(cartModels);
+
+    this.#headerCartComponents = new CartHeaderView(cartModels);
+    this.#headerCartComponents.setPopupCartHandler(this.#cartClick);
 
     if(prevHeaderCartComponents === null) {
-      return render(this.#headerCartComponents, this.#container)
+      render(this.#headerCartComponents, this.#container);
+      return;
     }
     replace(this.#headerCartComponents, prevHeaderCartComponents);
     remove(prevHeaderCartComponents);
