@@ -10,11 +10,7 @@ import CartProductPresenter from "./cart-product-presenter";
 import CartTotalAmountPresenter from './cart-total-amount-presenter';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import {render, remove} from '../framework/render';
-
-const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
-};
+import { TimeLimit } from '../const'
 
 export default class CartFullPresenter {
   cartContainer = new CartFullContainerView();
