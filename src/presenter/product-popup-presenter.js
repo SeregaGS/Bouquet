@@ -48,12 +48,16 @@ export default class ProductPopupPresenter {
     this.#slider.init();
   }
 
-  #addToCart = () => {
+  #addToCart = (button) => {
     const cartData = this.#cartModel.get();
 
     if(cartData.products.hasOwnProperty(this.#product.id)) {
-      this.#cartModel.delete(this.#product);
+      button.disabled = true;
+      button.textContent = 'возвращаем...';
+      this.#cartModel.clear(this.#product);
     } else {
+      button.disabled = true;
+      button.textContent = 'откладываем...';
       this.#cartModel.add(this.#product);
     }
   }
