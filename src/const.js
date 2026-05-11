@@ -36,4 +36,9 @@ export const UpdateType = {
   EXTRA: 'EXTRA',
   INIT: 'INIT'
 };
+
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 export const TEXT_DESCRIPTION_LENGTH = 140;
