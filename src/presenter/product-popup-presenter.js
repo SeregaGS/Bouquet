@@ -23,15 +23,15 @@ export default class ProductPopupPresenter {
 
   init = (flower) => {
     this.#product = flower;
-    const data = this.#cartModel.get().products.hasOwnProperty(this.#product.id);
+    const data = this.#cartModel.get()?.products?.hasOwnProperty(this.#product.id);
     this.#container.scrollTop = 0;
 
     const prevFlowerCardComponent = this.#popupComponent;
 
     this.#popupComponent = new ProductItemPopupView(this.#product, data);
 
-    this.#popupComponent.setCloseClickHandler(this.#closePopup);
-    this.#popupComponent.setAddToCartButtonClickHandler(this.#addToCart);
+    this.#popupComponent.setCloseButtonHandler(this.#closePopup);
+    this.#popupComponent.setAddToCartButtonHandler(this.#addToCart);
 
     if (prevFlowerCardComponent === null) {
       render(this.#popupComponent, this.#container);
