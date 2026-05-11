@@ -6,7 +6,9 @@ import FilterReasonPresenter from '../presenter/filter-reason-presenter'
 import FilterColorPresenter from '../presenter/filter-color-presenter'
 import CataloguePresenter from "../presenter/catalog-presenter";
 import ProductPopupPresenter from './product-popup-presenter';
-import HeaderCartPresenter from "./header-cart-presenter";
+import CartHeaderPresenter from "./cart-header-presenter";
+import CartFullPresenter from '../presenter/cart-full-presenter';
+import HeroView from '../views/hero-view';
 import {render, remove} from '../framework/render';
 import { modals } from "../modals/init-modals";
 
@@ -15,26 +17,30 @@ export default class MainPresenter {
   #loadingErrorComponent = new LoadingErrorView();
   #missionView = new MissionView();
   #advantagesView = new AdvantagesView();
+  #heroView = new HeroView();
 
   #filterReasonPresenter = null;
   #filterColorPresenter = null;
   #cataloguePresenter = null;
   #productPopupPresenter = null;
   #cartPresenter = null;
+  #cartFullPresenter = null;
 
   #isLoading= true;
   #selectedProduct = null;
 
   #container = null;
+  #wrapper = null;
   #cartContainer = null;
 
   #productsModel = null;
   #filterModel = null;
   #cartModel = null
 
-  constructor(container, cartContainer ,productsModel, filterModel, cartModel) {
+  constructor(container, cartContainer, wrapper, productsModel, filterModel, cartModel) {
     this.#container = container;
     this.#cartContainer = cartContainer;
+    this.#wrapper = wrapper;
     this.#productsModel = productsModel;
     this.#filterModel = filterModel;
     this.#cartModel = cartModel;
@@ -42,13 +48,23 @@ export default class MainPresenter {
     this.#productsModel.addObserver(this.#onData);
   }
   init = () => {
+    this.#renderHeroPresenter()
     this.#renderAdvantagesMission();
     this.#renderCart();
+    this.#renderCartPopup();
+  }
+  #renderCartPopup = () => {
+    if(this.#cartFullPresenter === null) {
+      this.#cartFullPresenter = new CartFullPresenter(this.#container, this.#productsModel, this.#cartModel, this.#handlerCartPopup);
+      this.#cartFullPresenter.init();
+      return;
+    }
+    remove(this.#cartFullPresenter);
+    this.#cartFullPresenter = null;
   }
   #renderCart = () => {
     if(this.#cartPresenter === null) {
-      this.#cartPresenter = new HeaderCartPresenter(this.#cartContainer, this.#cartModel);
-      this.#cartPresenter.init();
+      this.#cartPresenter = new CartHeaderPresenter(this.#cartContainer, this.#cartModel, this.#handlerCartPopup);
       return;
     }
     remove(this.#cartPresenter);
@@ -58,6 +74,14 @@ export default class MainPresenter {
   #onData = () => {
     this.#isLoading = false;
     this.#renderCatalog();
+  }
+  #renderHeroPresenter = () => {
+    render(this.#heroView, this.#container);
+    this.#heroView.buttonClickHandler(this.#buttonUpClickHandler);
+  }
+  #buttonUpClickHandler = () => {
+    const element = this.#filterReasonPresenter?.getElement();
+    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   #renderAdvantagesMission = () => {
     render(this.#missionView, this.#container);
@@ -111,5 +135,20 @@ export default class MainPresenter {
   #clickOpenPopup = async (id) => {
     this.#selectedProduct = await this.#productsModel.loadProductDetails(id);
     this.#renderPopup(this.#selectedProduct);
+  }
+
+  #handlerCartPopup = () => {
+    this.#clickCartVisibleHandler();
+  }
+  #clickCartVisibleHandler = () => {
+    const cartPopupContainer = this.#cartFullPresenter.cartContainer.element;
+
+    if(this.#container.style.display === 'none') {
+      cartPopupContainer.style.display = 'none';
+      this.#container.style.display = 'block';
+      return;
+    }
+    this.#container.style.display = 'none';
+    cartPopupContainer.style.display = 'block';
   }
 }
