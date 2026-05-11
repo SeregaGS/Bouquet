@@ -20,7 +20,6 @@ export default class ProductPresenter {
   init(flower) {
     if(!flower) return;
     this.#product = flower;
-
     const data = this.#cartModel.get().products.hasOwnProperty(this.#product.id);
     const prevFlowerCardComponent = this.#productComponent;
 
@@ -45,7 +44,7 @@ export default class ProductPresenter {
   #clickAddToCartHandler = () => {
     const cartData = this.#cartModel.get();
 
-    if(cartData.products.hasOwnProperty(this.#product.id)) {
+    if(cartData?.products?.hasOwnProperty(this.#product.id)) {
       this.#cartModel.delete(this.#product);
     } else {
       this.#cartModel.add(this.#product);
