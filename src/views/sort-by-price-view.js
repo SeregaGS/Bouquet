@@ -45,7 +45,7 @@ export default class SortByPriceView extends AbstractView {
     return createSortByPriceTemplate(this.#currentSort);
   }
 
-  buttonClickHandler(callback) {
+  setButtonMoreHandler(callback) {
     this._callback.buttonClick = callback;
     this.element.addEventListener('click', this.#buttonClickHandler);
   }
