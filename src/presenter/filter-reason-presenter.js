@@ -42,6 +42,9 @@ export default class FilterReasonPresenter {
     this.#filter.set(UpdateType.MINOR, filterType);
   }
 
+  getElement = () => {
+    return this.#filterComponent.element;
+  }
   destroy() {
     remove(this.#filterComponent);
     this.#filterComponent = null;
