@@ -3,8 +3,7 @@ import ApiService from "../framework/api-service";
 export default class CartApiServices extends ApiService {
   get = () => {
     return this._load({url: 'cart'})
-      .then(ApiService.parseResponse)
-      .catch((error) => console.log(error));
+      .then(ApiService.parseResponse);
   }
 
   add = async (product) => {
