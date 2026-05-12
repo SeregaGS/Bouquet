@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import { TypeLabelProducts } from '../const'
+import { TypeLabelProducts } from '../const';
 
 const createFilterReasonItem = ({key, name}, index, currentFilters) => {
   return `
