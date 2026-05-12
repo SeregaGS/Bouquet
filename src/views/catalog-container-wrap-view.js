@@ -1,11 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
 
-const createCatalogueWrapTemplate = () =>
-  `
-    <div class="container">
+const createCatalogueWrapTemplate = () => `<div class="container"></div>`
 
-    </div>
-  `
 export default class CatalogContainerWrapView extends AbstractView {
   get template() {
     return createCatalogueWrapTemplate();
