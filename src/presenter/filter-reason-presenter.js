@@ -1,5 +1,5 @@
 import FilterReasonView from '../views/filter-reason-view';
-import { render, remove } from '../framework/render';
+import {render, remove, replace} from '../framework/render';
 import { FILTER_TYPE_REASONS, UpdateType } from '../const';
 
 export default class FilterReasonPresenter {
@@ -23,16 +23,20 @@ export default class FilterReasonPresenter {
   };
 
   init() {
-    if(this.#filterComponent !== null) {
-      return;
-    }
-    this.#currentFilter = this.#filter.get();
-    const filters = this.filters;
+    const prevFilterComponent = this.#filterComponent;
 
-    this.#filterComponent = new FilterReasonView(filters, this.#currentFilter);
+    this.#currentFilter = this.#filter.get();
+
+    this.#filterComponent = new FilterReasonView(this.filters, this.#currentFilter);
     this.#filterComponent.setFilterTypeClickHandler(this.#filterTypeReason);
 
-    render(this.#filterComponent, this.#container);
+    if (prevFilterComponent === null) {
+      render(this.#filterComponent, this.#container);
+      return;
+    }
+
+    replace(this.#filterComponent, prevFilterComponent);
+    remove(prevFilterComponent);
   };
 
   #filterTypeReason = (filterType) => {
