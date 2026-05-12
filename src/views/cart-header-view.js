@@ -24,7 +24,7 @@ const createHeaderCartTemplate= ({productCount, sum}) => {
   `
 }
 export default class CartHeaderView extends AbstractView {
-  #cartData = null;
+  #cartData;
 
   constructor(cartData) {
     super();
@@ -39,7 +39,7 @@ export default class CartHeaderView extends AbstractView {
     this._callback.popupCart = callback;
     this.element.addEventListener('click', this.#setPopupCartHandler);
   }
-  
+
   #setPopupCartHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.tagName !== 'BUTTON') {
