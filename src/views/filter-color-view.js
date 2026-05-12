@@ -65,7 +65,7 @@ export default class FilterColorView extends AbstractView {
     this.element.addEventListener('change', this.#filterTypeHandler);
   }
   updateActiveFilters = (currentFilter) => {
-    const inputs = this.element.querySelectorAll('input[name="colors"]')
+    const inputs = this.element.querySelectorAll('input[name="colors"]');
     inputs.forEach(input => {
       const colorValue = input.dataset.filterColor;
       input.checked = currentFilter.includes(colorValue);
