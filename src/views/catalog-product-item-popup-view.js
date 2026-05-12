@@ -35,7 +35,7 @@ const createProductItemPopupTemplate = (flower) => {
 export default class ProductItemPopupView extends AbstractStatefulView {
   constructor(flower, isAdding) {
     super();
-    this._state = {...flower, isAdding}
+    this._state = {...flower, isAdding};
   }
   get template() {
     return createProductItemPopupTemplate(this._state);
