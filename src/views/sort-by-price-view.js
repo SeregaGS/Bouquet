@@ -35,7 +35,7 @@ const createSortByPriceTemplate = (activeSort) =>
     </div>
   `
 export default class SortByPriceView extends AbstractView {
-  #currentSort = null
+  #currentSort = null;
 
   constructor(currentSort) {
     super();
