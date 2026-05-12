@@ -18,21 +18,25 @@ export default class FilterColorPresenter {
   get filters() {
     return Object.entries(FILTER_TYPE_COLOR).map(([key, value]) => ({
       key: key,
-      name: value
+      name: value,
     }))
   };
 
   init() {
-    if(this.#filterComponent !== null) {
-      return;
-    }
-    this.#currentFilter = this.#filter.getColors();
+    const prevFilterComponent = this.#filterComponent;
 
+    this.#currentFilter = this.#filter.getColors();
 
     this.#filterComponent = new FilterColorView(this.filters, this.#currentFilter);
     this.#filterComponent.setFilterTypeClickHandler(this.#handleColorChange);
 
-    render(this.#filterComponent, this.#container)
+    if (prevFilterComponent === null) {
+      render(this.#filterComponent, this.#container);
+      return;
+    }
+
+    replace(this.#filterComponent, prevFilterComponent);
+    remove(prevFilterComponent);
   };
 
   #handleColorChange = (filterType) => {
