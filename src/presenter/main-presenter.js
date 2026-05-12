@@ -45,48 +45,56 @@ export default class MainPresenter {
     this.#filterModel = filterModel;
     this.#cartModel = cartModel;
 
-    this.#productsModel.addObserver(this.#onData);
   }
-  init = () => {
-    this.#renderHeroPresenter()
-    this.#renderAdvantagesMission();
-    this.#renderCart();
-    this.#renderCartPopup();
-  }
-  #renderCartPopup = () => {
-    if(this.#cartFullPresenter === null) {
-      this.#cartFullPresenter = new CartFullPresenter(this.#container, this.#productsModel, this.#cartModel, this.#handlerCartPopup);
-      this.#cartFullPresenter.init();
-      return;
+  init = async () => {
+    try {
+      render(this.#loadingComponent, this.#container);
+
+      await Promise.all([
+        this.#cartModel.init(),
+        this.#productsModel.init()
+      ])
+      this.#isLoading = false;
+
+      remove(this.#loadingErrorComponent);
+
+    } catch (error) {
+      this.#renderCathError();
     }
-    remove(this.#cartFullPresenter);
-    this.#cartFullPresenter = null;
+    if(!this.#isLoading) {
+      this.#renderIsLoading();
+    }
   }
+
+  #renderHeroView = () => {
+    render(this.#heroView, this.#container);
+    this.#heroView.buttonClickHandler(this.#setButtonUpHandler);
+  }
+  #renderAdvantagesMission = () => {
+    render(this.#missionView, this.#container);
+    render(this.#advantagesView, this.#container);
+  }
+
   #renderCart = () => {
     if(this.#cartPresenter === null) {
-      this.#cartPresenter = new CartHeaderPresenter(this.#cartContainer, this.#cartModel, this.#handlerCartPopup);
+      this.#cartPresenter = new CartHeaderPresenter(this.#cartContainer, this.#cartModel, this.#setCartVisibleHandler);
+      this.#cartPresenter.init();
       return;
     }
     remove(this.#cartPresenter);
     this.#cartPresenter = null;
   }
 
-  #onData = () => {
-    this.#isLoading = false;
-    this.#renderCatalog();
+  #renderCartPopup = () => {
+    if(this.#cartFullPresenter === null) {
+      this.#cartFullPresenter = new CartFullPresenter(this.#container, this.#productsModel, this.#cartModel, this.#setCartVisibleHandler);
+      this.#cartFullPresenter.init();
+      return;
+    }
+    remove(this.#cartFullPresenter);
+    this.#cartFullPresenter = null;
   }
-  #renderHeroPresenter = () => {
-    render(this.#heroView, this.#container);
-    this.#heroView.buttonClickHandler(this.#buttonUpClickHandler);
-  }
-  #buttonUpClickHandler = () => {
-    const element = this.#filterReasonPresenter?.getElement();
-    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  #renderAdvantagesMission = () => {
-    render(this.#missionView, this.#container);
-    render(this.#advantagesView, this.#container);
-  }
+
   #renderFilters = () => {
     if(!this.#filterReasonPresenter && !this.#filterColorPresenter) {
       this.#filterReasonPresenter = new FilterReasonPresenter(this.#container, this.#filterModel);
@@ -96,20 +104,13 @@ export default class MainPresenter {
     this.#filterColorPresenter.init();
   }
   #renderCatalog = () => {
-    if(this.#isLoading) {
-      render(this.#loadingComponent, this.#container);
-      return;
-    }
-
-    remove(this.#loadingComponent);
-
     if(!this.#cataloguePresenter) {
       this.#cataloguePresenter = new CataloguePresenter(
         this.#container,
         this.#productsModel,
         this.#filterModel,
         this.#cartModel,
-        this.#clickOpenPopup);
+        this.#setOpenPopup);
     }
     this.#renderFilters();
     this.#cataloguePresenter.init();
@@ -132,17 +133,32 @@ export default class MainPresenter {
     this.#selectedProduct = null;
     modals.close('popup-data-attr');
   }
-  #clickOpenPopup = async (id) => {
+
+  #onData = () => {
+    this.#renderCatalog();
+  }
+
+  #renderIsLoading = () => {
+    remove(this.#loadingComponent);
+    this.#renderHeroView()
+    this.#renderAdvantagesMission();
+    this.#renderCart();
+    this.#renderCartPopup();
+    this.#renderCatalog();
+    this.#productsModel.addObserver(this.#onData);
+  }
+  #renderCathError = () => {
+    this.#productsModel.removeObserver(this.#onData);
+    render(this.#loadingErrorComponent, this.#container);
+    this.#loadingErrorComponent.setReloadPage(this.#reloadPage);
+  }
+
+  #setOpenPopup = async (id) => {
     this.#selectedProduct = await this.#productsModel.loadProductDetails(id);
     this.#renderPopup(this.#selectedProduct);
   }
-
-  #handlerCartPopup = () => {
-    this.#clickCartVisibleHandler();
-  }
-  #clickCartVisibleHandler = () => {
+  #setCartVisibleHandler = () => {
     const cartPopupContainer = this.#cartFullPresenter.cartContainer.element;
-
     if(this.#container.style.display === 'none') {
       cartPopupContainer.style.display = 'none';
       this.#container.style.display = 'block';
@@ -150,5 +166,12 @@ export default class MainPresenter {
     }
     this.#container.style.display = 'none';
     cartPopupContainer.style.display = 'block';
+  }
+  #setButtonUpHandler = () => {
+    const element = this.#filterReasonPresenter?.getElement();
+    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  #reloadPage = () => {
+    window.location.reload()
   }
 }
