@@ -4,7 +4,7 @@ import { FILTER_TYPE_REASONS } from '../const';
 export default class FilterReasonType extends Observable {
 
   #filter = FILTER_TYPE_REASONS.all;
-  #colors = [FILTER_TYPE_REASONS.all]
+  #colors = [FILTER_TYPE_REASONS.all];
 
   get = () => this.#filter;
 
