@@ -1,11 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
 
-const createCatalogButtonWrapTemplate = () =>
-  `
-    <div class="catalogue__btn-wrap">
+const createCatalogButtonWrapTemplate = () => `<div class="catalogue__btn-wrap"></div>`
 
-    </div>
-  `
 export default class CatalogButtonWrapView extends AbstractView {
   get template() {
     return createCatalogButtonWrapTemplate();
