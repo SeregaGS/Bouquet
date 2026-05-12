@@ -3,17 +3,21 @@ import AbstractView from '../framework/view/abstract-view';
 const createLoadingErrorTemplate = () =>
   `
    <section class="error-message">
-          <h3 class="visually-hidden">Ошибка</h3>
-          <div class="message message--titled">
-            <p class="text text--align-center message__title">Упс, что - то пошло не так</p>
-            <p class="text text--align-center message__text">Давайте вернёмся на шаг назад и опробуем отправить ваш запрос снова</p>
-          </div>
-          <button class="btn btn--outlined-2 error-message__button" type="button">назад
-          </button>
-        </section>
+    <h3 class="visually-hidden">Ошибка</h3>
+    <p class="text text--align-center message__title title title--header">Упс, что - то пошло не так</p>
+    <button class="btn btn--outlined-2 error-message__button" type="button">Перезагрузить страницу</button>
+   </section>
   `
 export default class LoadingErrorView extends AbstractView {
   get template() {
     return createLoadingErrorTemplate();
+  }
+  setReloadPage = (callback) => {
+    this._callback.reloadPage = callback;
+    this.element.querySelector('.error-message__button').addEventListener('click', this.#reloadPage);
+  }
+  #reloadPage = (evt) => {
+    evt.preventDefault();
+    this._callback.reloadPage();
   }
 }
