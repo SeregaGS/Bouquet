@@ -30,15 +30,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const filterModel = new FilterModel();
 
-  const mainPresenter = new MainPresenter(mainContainer, headerContainerCount, wrapper, flowersProducts, filterModel, cartModel);
+  const mainPresenter = new MainPresenter(
+    mainContainer,
+    headerContainerCount,
+    wrapper,
+    flowersProducts,
+    filterModel,
+    cartModel);
 
   mainPresenter.init();
-  Promise.all([
-    cartModel.init(),
-    flowersProducts.init()
-  ])
-  // cartModel.init();
-  // flowersProducts.init();
-
-
 });
