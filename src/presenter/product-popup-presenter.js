@@ -29,8 +29,6 @@ export default class ProductPopupPresenter {
     const prevFlowerCardComponent = this.#popupComponent;
 
     this.#popupComponent = new ProductItemPopupView(this.#product, data);
-
-    this.#popupComponent.setCloseButtonHandler(this.#closePopup);
     this.#popupComponent.setAddToCartButtonHandler(this.#addToCart);
 
     if (prevFlowerCardComponent === null) {
@@ -48,17 +46,24 @@ export default class ProductPopupPresenter {
     this.#slider.init();
   }
 
-  #addToCart = (button) => {
+  #addToCart = async () => {
     const cartData = this.#cartModel.get();
+    const hasProduct = cartData.products.hasOwnProperty(this.#product.id);
 
-    if(cartData.products.hasOwnProperty(this.#product.id)) {
-      button.disabled = true;
-      button.textContent = 'возвращаем...';
-      this.#cartModel.clear(this.#product);
-    } else {
-      button.disabled = true;
-      button.textContent = 'откладываем...';
-      this.#cartModel.add(this.#product);
+    this.#popupComponent.updateElement({
+      isDisabled: true,
+    });
+
+    try {
+      if(hasProduct) {
+        await this.#cartModel.clear(this.#product);
+      } else {
+        await this.#cartModel.add(this.#product);
+      }
+    } catch {
+      this.#popupComponent.updateElement({
+        isDisabled: false,
+      });
     }
   }
   #handleModelChange = () => {
@@ -66,6 +71,8 @@ export default class ProductPopupPresenter {
   }
   destroy() {
     this.#cartModel.removeObserver(this.#handleModelChange);
+    this.#slider = null;
+    this.#product = null;
 
     if(this.#popupComponent === null) {
       return;
@@ -73,7 +80,5 @@ export default class ProductPopupPresenter {
 
     remove(this.#popupComponent);
     this.#popupComponent = null;
-    this.#slider = null;
-    this.#product = null;
   }
 }
