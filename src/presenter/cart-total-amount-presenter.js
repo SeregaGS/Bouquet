@@ -5,7 +5,7 @@ export default class CartTotalAmountPresenter {
   #container = null;
   #cartModel = null;
 
-  #productComponent = null;
+  #totalAmountComponent = null;
 
   constructor(container, cartModel) {
     this.#container = container;
@@ -14,22 +14,22 @@ export default class CartTotalAmountPresenter {
 
   init() {
     const total = this.#cartModel.get();
-    const prevFlowerCardComponent = this.#productComponent;
+    const prevTotalAmountComponent = this.#totalAmountComponent;
 
-    this.#productComponent = new CartDeferredTotalAmountView(total);
+    this.#totalAmountComponent = new CartDeferredTotalAmountView(total);
 
-    if(prevFlowerCardComponent === null) {
-      render(this.#productComponent, this.#container);
+    if(prevTotalAmountComponent === null) {
+      render(this.#totalAmountComponent, this.#container);
       return;
     }
 
-    replace(this.#productComponent, prevFlowerCardComponent);
-    remove(prevFlowerCardComponent);
+    replace(this.#totalAmountComponent, prevTotalAmountComponent);
+    remove(prevTotalAmountComponent);
   }
 
   destroy() {
-    remove(this.#productComponent);
-    this.#productComponent = null;
+    remove(this.#totalAmountComponent);
+    this.#totalAmountComponent = null;
   }
 
 }
