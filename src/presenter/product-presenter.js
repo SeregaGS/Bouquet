@@ -13,7 +13,7 @@ export default class ProductPresenter {
     this.#handleDataChange = handleDataChange;
     this.#cartModel = cartModel;
 
-    this.#cartModel.addObserver(() => this.init(this.#product));
+    this.#cartModel.addObserver(this.#handleCartUpdate);
 
   }
 
@@ -36,7 +36,9 @@ export default class ProductPresenter {
     remove(prevFlowerCardComponent);
   }
   destroy() {
+    this.#cartModel.removeObserver(this.#handleCartUpdate);
     remove(this.#productComponent);
+    this.#productComponent = null;
   }
   #handleOpenPopup = () => {
     this.#handleDataChange(this.#product.id);
@@ -50,5 +52,8 @@ export default class ProductPresenter {
       this.#cartModel.add(this.#product);
     }
 
+  }
+  #handleCartUpdate = () => {
+    this.init(this.#product)
   }
 }
