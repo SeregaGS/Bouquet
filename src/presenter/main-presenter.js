@@ -58,11 +58,9 @@ export default class MainPresenter {
 
       remove(this.#loadingErrorComponent);
 
+      this.#renderIsLoading();
     } catch (error) {
       this.#renderCathError();
-    }
-    if(!this.#isLoading) {
-      this.#renderIsLoading();
     }
   }
 
@@ -140,10 +138,10 @@ export default class MainPresenter {
 
   #renderIsLoading = () => {
     remove(this.#loadingComponent);
-    this.#renderHeroView()
+    this.#renderHeroView();
     this.#renderAdvantagesMission();
-    this.#renderCart();
     this.#renderCartPopup();
+    this.#renderCart();
     this.#renderCatalog();
     this.#productsModel.addObserver(this.#onData);
   }
