@@ -18,7 +18,7 @@ export default class FilterReasonPresenter {
   get filters() {
     return Object.entries(FILTER_TYPE_REASONS).map(([key, value]) => ({
       key: key,
-      name: value
+      name: value,
     }))
   };
 
@@ -47,7 +47,7 @@ export default class FilterReasonPresenter {
   }
 
   getElement = () => {
-    return this.#filterComponent.element;
+    return this.#filterComponent ? this.#filterComponent.element : null;
   }
   destroy() {
     remove(this.#filterComponent);
