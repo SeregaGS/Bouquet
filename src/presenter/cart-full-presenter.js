@@ -19,8 +19,8 @@ export default class CartFullPresenter {
   #cartDeferredView = new CartDeferredContainerView();
   #cartDeferredButtonCatalog = new CartDeferredButtonCatalogView();
   #cartDeferredListContainer = new CartDeferredList();
-  #cartButtonClearView = new CartButtonClearView();
   #cartEmptyView = new CartEmptyView();
+  #cartButtonClearView = new CartButtonClearView();
 
   #cartDeferredTotalAmountPresenter = null;
 
@@ -30,7 +30,10 @@ export default class CartFullPresenter {
   #productModel = null;
   #cartModel = null;
 
-  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   #productPresenter = new Map();
 
@@ -42,6 +45,7 @@ export default class CartFullPresenter {
 
     this.#cartModel.addObserver(this.#loadData);
     this.#productModel.addObserver(this.#loadData);
+    console.log(this.#uiBlocker)
   }
 
   init = () => {
@@ -50,15 +54,16 @@ export default class CartFullPresenter {
     this.#renderCartDeferredView();
     this.#renderButtonCatalog();
     render(this.#cartDeferredListContainer, this.#cartDeferredView.element);
+    this.#renderCartDeferredList();
   }
   get products() {
-    const cartData = this.#cartModel.get().products;
-    return this.#productModel.get().filter((item) => cartData.hasOwnProperty(item.id));
+    const cartModelData = this.#cartModel.get().products;
+    return this.#productModel.get().filter((item) => cartModelData.hasOwnProperty(item.id));
   }
-
   #renderCartContainer = () => {
     render(this.cartContainer, this.#container, 'afterend');
     render(this.#cartWrapper, this.cartContainer.element);
+
   }
   #renderHeroCart = () => {
     render(this.#cartHeroView, this.#cartWrapper.element);
@@ -78,7 +83,6 @@ export default class CartFullPresenter {
       return;
     }
     render(this.#cartButtonClearView, this.#cartDeferredView.element);
-
     this.#cartButtonClearView.setClearCart(this.#clearCartAllProducts);
   }
 
@@ -131,20 +135,18 @@ export default class CartFullPresenter {
   }
 
   #loadData = () => {
-    const allProducts = this.#productModel.get();
-    const cartData = this.#cartModel.get().products;
-
+    const allProducts = this.#productModel?.get();
+    const cartData = this.#cartModel?.get()?.products;
     if(!allProducts || !cartData || allProducts.length === 0) {
       return;
     }
-
     this.#renderCartDeferredList();
   }
 
   #clearCartProduct = async (id) => {
     this.#uiBlocker.block();
     try {
-      this.#cartModel.clear(id);
+      await this.#cartModel.clear(id);
     } finally  {
       this.#uiBlocker.unblock();
     }
