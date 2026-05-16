@@ -32,7 +32,7 @@ export default class CataloguePresenter {
   #renderFlowersCount = COUNT_FLOWERS;
   #filterModel = null;
   #selectPopup = null;
-  #cartModel = null
+  #cartModel = null;
 
   constructor(container, products, filterModel, cartModel, selectPopup) {
     this.#container = container;
@@ -56,7 +56,7 @@ export default class CataloguePresenter {
     const currentFilterColor = this.#filterModel.getColors();
 
     if (filterReason[currentFilterReason]) {
-      flowers = filterReason[currentFilterReason](flowers)
+      flowers = filterReason[currentFilterReason](flowers);
     }
 
     flowers = filterColors(flowers, currentFilterColor);
@@ -119,11 +119,11 @@ export default class CataloguePresenter {
   // Buttons
   #renderButtonMore() {
     render(this.#catalogButtonMore, this.#catalogButtonContainer.element);
-    this.#catalogButtonMore.setButtonMoreHandler(() => this.#buttonMoreClickHandler());
+    this.#catalogButtonMore.setButtonMoreHandler(this.#buttonMoreClickHandler);
   }
   #renderButtonUp() {
     render(this.#catalogButtonUpView, this.#catalogButtonContainer.element);
-    this.#catalogButtonUpView.setButtonUpHandler(() => this.#buttonUpClickHandler());
+    this.#catalogButtonUpView.setButtonUpHandler(this.#buttonUpClickHandler);
   }
   // Sort of price
   #sortTypeChange = (sortType) => {
