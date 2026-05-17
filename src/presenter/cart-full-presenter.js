@@ -45,7 +45,6 @@ export default class CartFullPresenter {
 
     this.#cartModel.addObserver(this.#loadData);
     this.#productModel.addObserver(this.#loadData);
-    console.log(this.#uiBlocker)
   }
 
   init = () => {
